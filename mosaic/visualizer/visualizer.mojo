@@ -11,7 +11,6 @@ from memory import UnsafePointer
 
 from mosaic.utility import dynamic_library_filepath
 from mosaic.image import Image, ImageSlice, ColorSpace
-from mosaic.video import VideoCapturing
 
 #
 # Backend
@@ -82,37 +81,6 @@ struct Visualizer:
             channels=c_int(image.channels()),
             window_title=window_title.unsafe_cstr_ptr(),
         )
-
-    #
-    # Video
-    #
-    @staticmethod
-    fn stream[V: VideoCapturing, //](mut video_capture: V, window_title: String):
-        while True:
-            if video_capture.is_next_frame_available():
-                var frame = video_capture.next_frame()
-                video_capture.did_read_next_frame()
-                Self.show(image=frame[], window_title=window_title)
-
-            if not Self.wait(0.001):
-                break
-
-    @staticmethod
-    fn stream[
-        V: VideoCapturing,
-        out_dtype: DType,
-        out_color_space: ColorSpace, //,
-        frame_processor: fn[V: VideoCapturing] (Pointer[Image[V.color_space, DType.uint8]]) capturing [_] -> Image[out_color_space, out_dtype],
-    ](mut video_capture: V, window_title: String):
-        while True:
-            if video_capture.is_next_frame_available():
-                var frame = video_capture.next_frame()
-                video_capture.did_read_next_frame()
-                var processed_frame = frame_processor(frame)
-                Self.show(image=processed_frame, window_title=window_title)
-
-            if not Self.wait(0.001):
-                break
 
     #
     # Run Loop

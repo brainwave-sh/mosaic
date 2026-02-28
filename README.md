@@ -37,12 +37,8 @@ It unifies the computer vision workflow into one language that runs on any hardw
   - Filtering
   - Geometric transforms
   - Fourier transforms
-- Video capture (currently only macOS)
-  - Stream connected cameras
-- Video processing (currently only macOS)
-  - Filter live video using custom processors
 - Visualization (currently only macOS)
-  - Native image and video rendering
+  - Native image rendering
 - Hardware acceleration
   - Parallelization and SIMD on CPUs
   - GPU acceleration when available
@@ -205,18 +201,4 @@ pixi run mojo load_image.mojo
 - Source: [examples/high_pass_filter.mojo](examples/high_pass_filter.mojo)
 <div align="center">
   <img src="assets/examples/high-pass-filter.png" width="768">
-</div>
-
-#### Video capture
-- Opens the first available camera and visualizes the frames
-- Source: [examples/video_capture.mojo](examples/video_capture.mojo)
-<div align="center">
-  <img src="assets/examples/video-capture.png" width="768">
-</div>
-
-#### Video processing
-- Detects edges in the camera stream
-- Source: [examples/video_processing.mojo](examples/video_processing.mojo)
-<div align="center">
-  <img src="assets/examples/video-processing.png" width="768">
 </div>
