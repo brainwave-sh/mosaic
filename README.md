@@ -5,8 +5,8 @@
     An image processing library in Mojo
     
   ![Language Badge](https://img.shields.io/badge/language-mojo-orange)
-  ![GitHub License Badge](https://img.shields.io/github/license/christianbator/mosaic)
-  ![CodeQL](https://github.com/christianbator/mosaic/workflows/CodeQL/badge.svg)
+  ![GitHub License Badge](https://img.shields.io/github/license/brainwave-sh/mosaic)
+  ![CodeQL](https://github.com/brainwave-sh/mosaic/workflows/CodeQL/badge.svg)
   </p>
 </div>
 
@@ -69,7 +69,7 @@ mosaic-mojo = "*"
 #### Prerequisites
 Clone the repo and build Mosaic:
 ```bash
-git clone git@github.com:christianbator/mosaic.git
+git clone git@github.com:brainwave-sh/mosaic.git
 cd mosaic
 pixi run build
 ```
