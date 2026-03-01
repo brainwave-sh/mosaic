@@ -10,7 +10,7 @@
 version = "0.1.0"
 
 # These should match rattler-build/recipe.yaml > about
-homepage = "https://mosaiclib.org"
+homepage = "https://brainwave.sh/mosaic"
 license = "Apache-2.0"
 license-file = "LICENSE"
 description = "An image processing library in Mojo" # This is "summary" in recipe.yaml
