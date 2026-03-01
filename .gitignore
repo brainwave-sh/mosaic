@@ -6,16 +6,16 @@
 #
 
 # Pixi
-.pixi
+.pixi/
 
 # Rattler-build
-rattler-build/output
+/output/
 
 # Modular
-modular
+modular/
 
 # Claude
-.claude
+.claude/
 
 # Development
 main.mojo
