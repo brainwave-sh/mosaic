@@ -63,7 +63,11 @@ struct Image[color_space: ColorSpace, dtype: DType](
     @staticmethod
     fn from_spectrum[
         spectrum_dtype: DType, //
-    ](spectrum: Matrix[spectrum_dtype, Self.color_space.channels(), complex=True], lower_bound: Scalar[DType.int64], upper_bound: Scalar[DType.int64]) -> Self:
+    ](
+        spectrum: Matrix[spectrum_dtype, Self.color_space.channels(), complex=True],
+        lower_bound: Scalar[DType.int64],
+        upper_bound: Scalar[DType.int64],
+    ) -> Self:
         var real = spectrum.fourier_transform[inverse=True]().real()
         real.map_to_range(lower_bound.cast[fft_dtype](), upper_bound.cast[fft_dtype]())
 
@@ -193,15 +197,21 @@ struct Image[color_space: ColorSpace, dtype: DType](
     # Slicing
     #
     @always_inline
-    fn __getitem__[mut: Bool, origin: Origin[mut=mut], //](ref [origin]self, y: Int, x_slice: Slice) raises -> ImageSlice[Self.color_space, Self.dtype, origin]:
+    fn __getitem__[
+        mut: Bool, origin: Origin[mut=mut], //
+    ](ref [origin]self, y: Int, x_slice: Slice) raises -> ImageSlice[Self.color_space, Self.dtype, origin]:
         return self[y : y + 1, x_slice]
 
     @always_inline
-    fn __getitem__[mut: Bool, origin: Origin[mut=mut], //](ref [origin]self, y_slice: Slice, x: Int) raises -> ImageSlice[Self.color_space, Self.dtype, origin]:
+    fn __getitem__[
+        mut: Bool, origin: Origin[mut=mut], //
+    ](ref [origin]self, y_slice: Slice, x: Int) raises -> ImageSlice[Self.color_space, Self.dtype, origin]:
         return self[y_slice, x : x + 1]
 
     @always_inline
-    fn __getitem__[mut: Bool, origin: Origin[mut=mut], //](ref [origin]self, y_slice: Slice, x_slice: Slice) raises -> ImageSlice[Self.color_space, Self.dtype, origin]:
+    fn __getitem__[
+        mut: Bool, origin: Origin[mut=mut], //
+    ](ref [origin]self, y_slice: Slice, x_slice: Slice) raises -> ImageSlice[Self.color_space, Self.dtype, origin]:
         return self.slice(
             y_range=StridedRange(
                 slice=y_slice,
@@ -218,11 +228,15 @@ struct Image[color_space: ColorSpace, dtype: DType](
         )
 
     @always_inline
-    fn slice[mut: Bool, origin: Origin[mut=mut], //](ref [origin]self, y_range: StridedRange) raises -> ImageSlice[Self.color_space, Self.dtype, origin]:
+    fn slice[
+        mut: Bool, origin: Origin[mut=mut], //
+    ](ref [origin]self, y_range: StridedRange) raises -> ImageSlice[Self.color_space, Self.dtype, origin]:
         return self.slice(y_range=y_range, x_range=StridedRange(self.width()))
 
     @always_inline
-    fn slice[mut: Bool, origin: Origin[mut=mut], //](ref [origin]self, *, x_range: StridedRange) raises -> ImageSlice[Self.color_space, Self.dtype, origin]:
+    fn slice[
+        mut: Bool, origin: Origin[mut=mut], //
+    ](ref [origin]self, *, x_range: StridedRange) raises -> ImageSlice[Self.color_space, Self.dtype, origin]:
         return self.slice(y_range=StridedRange(self.height()), x_range=x_range)
 
     @always_inline
@@ -232,13 +246,17 @@ struct Image[color_space: ColorSpace, dtype: DType](
         return ImageSlice[Self.color_space, Self.dtype, origin](self, y_range=y_range, x_range=x_range)
 
     @always_inline
-    fn channel_slice[channel: Int](self) -> MatrixSlice[StridedRange(channel, channel + 1), Self.dtype, Self.color_space.channels(), False, origin_of(self._matrix)]:
+    fn channel_slice[
+        channel: Int
+    ](self) -> MatrixSlice[StridedRange(channel, channel + 1), Self.dtype, Self.color_space.channels(), False, origin_of(self._matrix)]:
         return self._matrix.component_slice[channel]()
 
     @always_inline
     fn channel_slice[
         channel: Int
-    ](self, y_range: StridedRange) raises -> MatrixSlice[StridedRange(channel, channel + 1), Self.dtype, Self.color_space.channels(), False, origin_of(self._matrix)]:
+    ](self, y_range: StridedRange) raises -> MatrixSlice[
+        StridedRange(channel, channel + 1), Self.dtype, Self.color_space.channels(), False, origin_of(self._matrix)
+    ]:
         return self._matrix.component_slice[channel](y_range)
 
     @always_inline
@@ -258,25 +276,33 @@ struct Image[color_space: ColorSpace, dtype: DType](
         return self._matrix.component_slice[channel](row_range=y_range, col_range=x_range)
 
     @always_inline
-    fn strided_slice[channel_range: StridedRange](self) -> MatrixSlice[channel_range, Self.dtype, Self.color_space.channels(), False, origin_of(self._matrix)]:
+    fn strided_slice[
+        channel_range: StridedRange
+    ](self) -> MatrixSlice[channel_range, Self.dtype, Self.color_space.channels(), False, origin_of(self._matrix)]:
         return self._matrix.strided_slice[channel_range]()
 
     @always_inline
     fn strided_slice[
         channel_range: StridedRange
-    ](self, y_range: StridedRange) raises -> MatrixSlice[channel_range, Self.dtype, Self.color_space.channels(), False, origin_of(self._matrix)]:
+    ](self, y_range: StridedRange) raises -> MatrixSlice[
+        channel_range, Self.dtype, Self.color_space.channels(), False, origin_of(self._matrix)
+    ]:
         return self._matrix.strided_slice[channel_range](y_range)
 
     @always_inline
     fn strided_slice[
         channel_range: StridedRange
-    ](self, *, x_range: StridedRange) raises -> MatrixSlice[channel_range, Self.dtype, Self.color_space.channels(), False, origin_of(self._matrix)]:
+    ](self, *, x_range: StridedRange) raises -> MatrixSlice[
+        channel_range, Self.dtype, Self.color_space.channels(), False, origin_of(self._matrix)
+    ]:
         return self._matrix.strided_slice[channel_range](col_range=x_range)
 
     @always_inline
     fn strided_slice[
         channel_range: StridedRange
-    ](self, y_range: StridedRange, x_range: StridedRange) raises -> MatrixSlice[channel_range, Self.dtype, Self.color_space.channels(), False, origin_of(self._matrix)]:
+    ](self, y_range: StridedRange, x_range: StridedRange) raises -> MatrixSlice[
+        channel_range, Self.dtype, Self.color_space.channels(), False, origin_of(self._matrix)
+    ]:
         return self._matrix.strided_slice[channel_range](row_range=y_range, col_range=x_range)
 
     @always_inline
@@ -322,7 +348,13 @@ struct Image[color_space: ColorSpace, dtype: DType](
     fn store_sub_matrix(mut self, value: Matrix[Self.dtype, Self.color_space.channels()], y: Int, x: Int, channel: Int = 0) raises:
         self._matrix.store_sub_matrix(value, row=y, col=x, component=channel)
 
-    fn store_sub_matrix(mut self, value: MatrixSlice[dtype=Self.dtype, depth = Self.color_space.channels(), complex=False], y: Int, x: Int, channel: Int = 0) raises:
+    fn store_sub_matrix(
+        mut self,
+        value: MatrixSlice[dtype = Self.dtype, depth = Self.color_space.channels(), complex=False],
+        y: Int,
+        x: Int,
+        channel: Int = 0,
+    ) raises:
         self._matrix.store_sub_matrix(value, row=y, col=x, component=channel)
 
     #
@@ -619,7 +651,9 @@ struct Image[color_space: ColorSpace, dtype: DType](
     fn fill(mut self, value: Scalar[Self.dtype]):
         self._matrix.fill(value)
 
-    fn strided_for_each[transformer: fn[width: Int] (value: SIMD[Self.dtype, width]) capturing -> SIMD[Self.dtype, width]](mut self, channel: Int):
+    fn strided_for_each[
+        transformer: fn[width: Int] (value: SIMD[Self.dtype, width]) capturing -> SIMD[Self.dtype, width]
+    ](mut self, channel: Int):
         @parameter
         fn number_transformer[width: Int](value: Number[Self.dtype, width]) -> Number[Self.dtype, width]:
             return Number[Self.dtype, width](transformer(value.value))
@@ -642,7 +676,9 @@ struct Image[color_space: ColorSpace, dtype: DType](
 
         self._matrix.for_each[number_transformer]()
 
-    fn for_each_zipped[transformer: fn[width: Int] (value: SIMD[Self.dtype, width], rhs: SIMD[Self.dtype, width]) capturing -> SIMD[Self.dtype, width]](mut self, other: Self):
+    fn for_each_zipped[
+        transformer: fn[width: Int] (value: SIMD[Self.dtype, width], rhs: SIMD[Self.dtype, width]) capturing -> SIMD[Self.dtype, width]
+    ](mut self, other: Self):
         @parameter
         fn number_transformer[width: Int](value: Number[Self.dtype, width], rhs: Number[Self.dtype, width]) -> Number[Self.dtype, width]:
             return Number[Self.dtype, width](transformer(value=value.value, rhs=rhs.value))
@@ -749,7 +785,9 @@ struct Image[color_space: ColorSpace, dtype: DType](
                 var y1 = Int(floor(fractional_y))
                 var y2 = min(y1 + 1, self.height() - 1)
 
-                fn process_col[simd_width: Int](x: Int) unified {mut result, read self, read height, read width, read fractional_y, read y1, read y2, read y}:
+                fn process_col[
+                    simd_width: Int
+                ](x: Int) unified {mut result, read self, read height, read width, read fractional_y, read y1, read y2, read y}:
                     var fractional_x = (x + SIMDRange[simd_width]().cast[DType.float64]()) * self.width() / width
                     var x1 = floor(fractional_x).cast[DType.int]()
                     var x2 = (x1 + 1).clamp(0, self.width() - 1)
@@ -763,7 +801,8 @@ struct Image[color_space: ColorSpace, dtype: DType](
                     ).value.cast[DType.float64]()
 
                     var top_intermediate = x_in_bounds.select(
-                        true_case=(x2.cast[DType.float64]() - fractional_x) * top_left + (fractional_x - x1.cast[DType.float64]()) * top_right,
+                        true_case=(x2.cast[DType.float64]() - fractional_x) * top_left
+                        + (fractional_x - x1.cast[DType.float64]()) * top_right,
                         false_case=top_left,
                     )
 
@@ -779,7 +818,8 @@ struct Image[color_space: ColorSpace, dtype: DType](
                         ).value.cast[DType.float64]()
 
                         var bottom_intermediate = x_in_bounds.select(
-                            true_case=(x2.cast[DType.float64]() - fractional_x) * bottom_left + (fractional_x - x1.cast[DType.float64]()) * bottom_right,
+                            true_case=(x2.cast[DType.float64]() - fractional_x) * bottom_left
+                            + (fractional_x - x1.cast[DType.float64]()) * bottom_right,
                             false_case=bottom_left,
                         )
 
@@ -969,7 +1009,9 @@ struct Image[color_space: ColorSpace, dtype: DType](
         var half_kernel_cols = kernel.cols() // 2
 
         var padded_self = self.padded[border](height=half_kernel_rows, width=half_kernel_cols)
-        var padded_kernel = Matrix[fft_dtype, Self.color_space.channels(), complex=True](rows=padded_self.height(), cols=padded_self.width())
+        var padded_kernel = Matrix[fft_dtype, Self.color_space.channels(), complex=True](
+            rows=padded_self.height(), cols=padded_self.width()
+        )
 
         @parameter
         for component in range(kernel.depth):
@@ -995,7 +1037,9 @@ struct Image[color_space: ColorSpace, dtype: DType](
         @parameter
         fn take_real_value[width: Int](row: Int, col: Int, component: Int):
             result._strided_store(
-                padded_result._strided_load[width](row=half_kernel_rows + row, col=half_kernel_cols + col, component=component).real().cast[Self.dtype](),
+                padded_result._strided_load[width](row=half_kernel_rows + row, col=half_kernel_cols + col, component=component)
+                .real()
+                .cast[Self.dtype](),
                 y=row,
                 x=col,
                 channel=component,
@@ -1119,5 +1163,13 @@ struct Image[color_space: ColorSpace, dtype: DType](
 
     fn write_to[W: Writer](self, mut writer: W):
         writer.write(
-            "[Image: height = ", self.height(), ", width = ", self.width(), ", color_space = ", Self.color_space, ", bit_depth = ", bit_width_of[Self.dtype](), "]"
+            "[Image: height = ",
+            self.height(),
+            ", width = ",
+            self.width(),
+            ", color_space = ",
+            Self.color_space,
+            ", bit_depth = ",
+            bit_width_of[Self.dtype](),
+            "]",
         )

@@ -37,20 +37,20 @@ struct NumericArray[dtype: DType, *, complex: Bool = False](Copyable, Sized, Str
 
         self._count = count
 
-    fn __init__(out self, *values: ScalarNumber[Self.dtype, complex=Self.complex]):
+    fn __init__(out self, *values: ScalarNumber[Self.dtype, complex = Self.complex]):
         self = Self(values)
 
-    fn __init__(out self, values: VariadicList[ScalarNumber[Self.dtype, complex=Self.complex]]):
+    fn __init__(out self, values: VariadicList[ScalarNumber[Self.dtype, complex = Self.complex]]):
         self = Self(count=len(values))
 
         for index in range(len(values)):
             self.store(values[index], index=index)
 
-    fn __init__(out self, var values: List[ScalarNumber[Self.dtype, complex=Self.complex]]):
+    fn __init__(out self, var values: List[ScalarNumber[Self.dtype, complex = Self.complex]]):
         self._data = values.steal_data().bitcast[Scalar[Self.dtype]]()
         self._count = len(values)
 
-    fn __init__(out self, var data: UnsafePointer[ScalarNumber[Self.dtype, complex=Self.complex], MutAnyOrigin], count: Int):
+    fn __init__(out self, var data: UnsafePointer[ScalarNumber[Self.dtype, complex = Self.complex], MutAnyOrigin], count: Int):
         _assert(count > 0, "Count must be greater than 0")
 
         self._data = data.bitcast[Scalar[Self.dtype]]()
@@ -79,14 +79,16 @@ struct NumericArray[dtype: DType, *, complex: Bool = False](Copyable, Sized, Str
 
             @parameter
             if Self.complex:
-                result.store(ScalarNumber[Self.dtype, complex=Self.complex](real=i, imaginary=0), index=i)
+                result.store(ScalarNumber[Self.dtype, complex = Self.complex](real=i, imaginary=0), index=i)
             else:
-                result.store(ScalarNumber[Self.dtype, complex=Self.complex](i), index=i)
+                result.store(ScalarNumber[Self.dtype, complex = Self.complex](i), index=i)
 
         return result^
 
     @staticmethod
-    fn random(*, count: Int, min: Scalar[Self.dtype] = Scalar[Self.dtype].MIN_FINITE, max: Scalar[Self.dtype] = Scalar[Self.dtype].MAX_FINITE) -> Self:
+    fn random(
+        *, count: Int, min: Scalar[Self.dtype] = Scalar[Self.dtype].MIN_FINITE, max: Scalar[Self.dtype] = Scalar[Self.dtype].MAX_FINITE
+    ) -> Self:
         _assert(count > 0, "Count must be greater than 0")
 
         var result = Self(count=count)
@@ -109,25 +111,29 @@ struct NumericArray[dtype: DType, *, complex: Bool = False](Copyable, Sized, Str
     # Access
     #
     @always_inline
-    fn __getitem__(self, index: Int) -> ScalarNumber[Self.dtype, complex=Self.complex]:
+    fn __getitem__(self, index: Int) -> ScalarNumber[Self.dtype, complex = Self.complex]:
         return self.load(index)
 
     @always_inline
-    fn __setitem__(mut self: NumericArray[Self.dtype, complex=Self.complex], index: Int, value: ScalarNumber[Self.dtype, complex=Self.complex]):
+    fn __setitem__(
+        mut self: NumericArray[Self.dtype, complex = Self.complex], index: Int, value: ScalarNumber[Self.dtype, complex = Self.complex]
+    ):
         self.store(value, index=index)
 
     @always_inline
-    fn load[width: Int = 1](self, index: Int) -> Number[Self.dtype, width, complex=Self.complex]:
+    fn load[width: Int = 1](self, index: Int) -> Number[Self.dtype, width, complex = Self.complex]:
         @parameter
         if Self.complex:
-            return Number[Self.dtype, width, complex=Self.complex](
-                rebind[Number[Self.dtype, width, complex=Self.complex].Value]((self._data + index * 2).load[width = 2 * width]())
+            return Number[Self.dtype, width, complex = Self.complex](
+                rebind[Number[Self.dtype, width, complex = Self.complex].Value]((self._data + index * 2).load[width = 2 * width]())
             )
         else:
-            return Number[Self.dtype, width, complex=Self.complex](rebind[Number[Self.dtype, width, complex=Self.complex].Value]((self._data + index).load[width=width]()))
+            return Number[Self.dtype, width, complex = Self.complex](
+                rebind[Number[Self.dtype, width, complex = Self.complex].Value]((self._data + index).load[width=width]())
+            )
 
     @always_inline
-    fn store[width: Int, //](mut self, value: Number[Self.dtype, width, complex=Self.complex], index: Int):
+    fn store[width: Int, //](mut self, value: Number[Self.dtype, width, complex = Self.complex], index: Int):
         @parameter
         if Self.complex:
             (self._data + index * 2).store(value.value)
@@ -135,20 +141,20 @@ struct NumericArray[dtype: DType, *, complex: Bool = False](Copyable, Sized, Str
             (self._data + index).store(value.value)
 
     @always_inline
-    fn strided_load[width: Int = 1](self, index: Int, stride: Int) -> Number[Self.dtype, width, complex=Self.complex]:
+    fn strided_load[width: Int = 1](self, index: Int, stride: Int) -> Number[Self.dtype, width, complex = Self.complex]:
         @parameter
         if Self.complex:
-            return Number[Self.dtype, width, complex=Self.complex](
+            return Number[Self.dtype, width, complex = Self.complex](
                 real=(self._data + index * 2).strided_load[width=width](stride * 2),
                 imaginary=(self._data + index * 2 + 1).strided_load[width=width](stride * 2),
             )
         else:
-            return Number[Self.dtype, width, complex=Self.complex](
-                rebind[Number[Self.dtype, width, complex=Self.complex].Value]((self._data + index).strided_load[width=width](stride))
+            return Number[Self.dtype, width, complex = Self.complex](
+                rebind[Number[Self.dtype, width, complex = Self.complex].Value]((self._data + index).strided_load[width=width](stride))
             )
 
     @always_inline
-    fn strided_store[width: Int, //](mut self, value: Number[Self.dtype, width, complex=Self.complex], index: Int, stride: Int):
+    fn strided_store[width: Int, //](mut self, value: Number[Self.dtype, width, complex = Self.complex], index: Int, stride: Int):
         @parameter
         if Self.complex:
             (self._data + index * 2).strided_store(value.real(), stride=stride * 2)
@@ -157,11 +163,13 @@ struct NumericArray[dtype: DType, *, complex: Bool = False](Copyable, Sized, Str
             (self._data + index).strided_store(value.value, stride=stride)
 
     @always_inline
-    fn gather[width: Int, //](self, index: Int, offset: SIMD[DType.int, width], mask: SIMD[DType.bool, width]) -> Number[Self.dtype, width, complex=Self.complex]:
+    fn gather[
+        width: Int, //
+    ](self, index: Int, offset: SIMD[DType.int, width], mask: SIMD[DType.bool, width]) -> Number[Self.dtype, width, complex = Self.complex]:
         @parameter
         if Self.complex:
-            return Number[Self.dtype, width, complex=Self.complex](
-                rebind[Number[Self.dtype, width, complex=Self.complex].Value](
+            return Number[Self.dtype, width, complex = Self.complex](
+                rebind[Number[Self.dtype, width, complex = Self.complex].Value](
                     (self._data + index * 2).gather(
                         offset=(offset * 2).interleave(offset * 2 + 1),
                         mask=mask.interleave(mask),
@@ -169,12 +177,20 @@ struct NumericArray[dtype: DType, *, complex: Bool = False](Copyable, Sized, Str
                 )
             )
         else:
-            return Number[Self.dtype, width, complex=Self.complex](
-                rebind[Number[Self.dtype, width, complex=Self.complex].Value]((self._data + index).gather(offset=offset, mask=mask))
+            return Number[Self.dtype, width, complex = Self.complex](
+                rebind[Number[Self.dtype, width, complex = Self.complex].Value]((self._data + index).gather(offset=offset, mask=mask))
             )
 
     @always_inline
-    fn scatter[width: Int, //](self, value: Number[Self.dtype, width, complex=Self.complex], index: Int, offset: SIMD[DType.int, width], mask: SIMD[DType.bool, width]):
+    fn scatter[
+        width: Int, //
+    ](
+        self,
+        value: Number[Self.dtype, width, complex = Self.complex],
+        index: Int,
+        offset: SIMD[DType.int, width],
+        mask: SIMD[DType.bool, width],
+    ):
         @parameter
         if Self.complex:
             (self._data + index * 2).scatter(

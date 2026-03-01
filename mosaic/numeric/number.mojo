@@ -31,7 +31,20 @@ comptime print_precision = 3
 #
 @register_passable("trivial")
 struct Number[dtype: DType, width: Int, *, complex: Bool = False](
-    Absable, Boolable, CeilDivable, Ceilable, Copyable, Floatable, Floorable, Hashable, Indexer, Intable, Roundable, Stringable, Truncable, Writable
+    Absable,
+    Boolable,
+    CeilDivable,
+    Ceilable,
+    Copyable,
+    Floatable,
+    Floorable,
+    Hashable,
+    Indexer,
+    Intable,
+    Roundable,
+    Stringable,
+    Truncable,
+    Writable,
 ):
     #
     # Fields
@@ -58,7 +71,7 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
         self.value = value
 
     @always_inline
-    fn __init__[other_dtype: DType, //](out self, value: Number[other_dtype, Self.width, complex=Self.complex]):
+    fn __init__[other_dtype: DType, //](out self, value: Number[other_dtype, Self.width, complex = Self.complex]):
         self.value = value.value.cast[Self.dtype]()
 
     @always_inline
@@ -80,18 +93,18 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
             self.value = value
 
     @always_inline
-    fn __init__[T: Floatable](out self: ScalarNumber[DType.float64, complex=Self.complex], value: T):
+    fn __init__[T: Floatable](out self: ScalarNumber[DType.float64, complex = Self.complex], value: T):
         @parameter
         if Self.complex:
-            self.value = ScalarNumber[DType.float64, complex=Self.complex].Value(value.__float__(), 0.0)
+            self.value = ScalarNumber[DType.float64, complex = Self.complex].Value(value.__float__(), 0.0)
         else:
             self.value = value.__float__()
 
     @always_inline
-    fn __init__[T: FloatableRaising](out self: ScalarNumber[DType.float64, complex=Self.complex], value: T) raises:
+    fn __init__[T: FloatableRaising](out self: ScalarNumber[DType.float64, complex = Self.complex], value: T) raises:
         @parameter
         if Self.complex:
-            self.value = ScalarNumber[DType.float64, complex=Self.complex].Value(value.__float__(), 0.0)
+            self.value = ScalarNumber[DType.float64, complex = Self.complex].Value(value.__float__(), 0.0)
         else:
             self.value = value.__float__()
 
@@ -120,10 +133,12 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
 
     @always_inline
     @implicit
-    fn __init__(out self, value: ScalarNumber[Self.dtype, complex=Self.complex], /):
+    fn __init__(out self, value: ScalarNumber[Self.dtype, complex = Self.complex], /):
         @parameter
         if Self.complex:
-            self.value = rebind[Self.Value](SIMD[Self.dtype, Self.width](value.value[0]).interleave(SIMD[Self.dtype, Self.width](value.value[1])))
+            self.value = rebind[Self.Value](
+                SIMD[Self.dtype, Self.width](value.value[0]).interleave(SIMD[Self.dtype, Self.width](value.value[1]))
+            )
         else:
             self.value = value.value[0]
 
@@ -161,7 +176,7 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
         self = Self(real=tuple[0], imaginary=tuple[1])
 
     @staticmethod
-    fn from_bits[int_type: DType, //](value: SIMD[int_type, Self.Value.size]) -> Number[Self.dtype, Self.width, complex=Self.complex]:
+    fn from_bits[int_type: DType, //](value: SIMD[int_type, Self.Value.size]) -> Number[Self.dtype, Self.width, complex = Self.complex]:
         return Self(Self.Value(from_bits=value))
 
     @staticmethod
@@ -199,15 +214,15 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
     # Access
     #
     @always_inline
-    fn __getitem__(self, index: Int) -> ScalarNumber[Self.dtype, complex=Self.complex]:
+    fn __getitem__(self, index: Int) -> ScalarNumber[Self.dtype, complex = Self.complex]:
         @parameter
         if Self.complex:
-            return ScalarNumber[Self.dtype, complex=Self.complex](real=self.value[index], imaginary=self.value[index + 1])
+            return ScalarNumber[Self.dtype, complex = Self.complex](real=self.value[index], imaginary=self.value[index + 1])
         else:
-            return ScalarNumber[Self.dtype, complex=Self.complex](self.value[index])
+            return ScalarNumber[Self.dtype, complex = Self.complex](self.value[index])
 
     @always_inline
-    fn __setitem__(mut self, index: Int, value: ScalarNumber[Self.dtype, complex=Self.complex]):
+    fn __setitem__(mut self, index: Int, value: ScalarNumber[Self.dtype, complex = Self.complex]):
         @parameter
         if Self.complex:
             self.value[index] = value.value[0]
@@ -215,7 +230,7 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
         else:
             self.value[index] = value.value[0]
 
-    fn __contains__(self, value: ScalarNumber[Self.dtype, complex=Self.complex]) -> Bool:
+    fn __contains__(self, value: ScalarNumber[Self.dtype, complex = Self.complex]) -> Bool:
         @parameter
         if Self.complex:
 
@@ -551,8 +566,8 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
     # Numeric Methods
     #
     @always_inline
-    fn to_bits[int_dtype: DType = _integral_type_of[Self.dtype]()](self) -> Number[int_dtype, Self.width, complex=Self.complex]:
-        return Number[int_dtype, Self.width, complex=Self.complex](self.value.to_bits())
+    fn to_bits[int_dtype: DType = _integral_type_of[Self.dtype]()](self) -> Number[int_dtype, Self.width, complex = Self.complex]:
+        return Number[int_dtype, Self.width, complex = Self.complex](self.value.to_bits())
 
     # @staticmethod
     # fn from_bytes[*, big_endian: Bool = is_big_endian()](bytes: InlineArray[Byte, size_of[SIMD[Self.dtype, Self.width]]()]) -> Self:
@@ -567,7 +582,9 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
 
     #     return self.value.as_bytes()
 
-    fn clamp(self, lower_bound: Number[Self.dtype, Self.width, complex=False], upper_bound: Number[Self.dtype, Self.width, complex=False]) -> Self:
+    fn clamp(
+        self, lower_bound: Number[Self.dtype, Self.width, complex=False], upper_bound: Number[Self.dtype, Self.width, complex=False]
+    ) -> Self:
         constrained[not Self.complex, "clamp() is only available for non-complex numbers"]()
 
         return Self(self.value.clamp(lower_bound=rebind[Self.Value](lower_bound.value), upper_bound=rebind[Self.Value](upper_bound.value)))
@@ -607,126 +624,158 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
         if Self.complex:
             return Self(real=self.real().shuffle[mask=mask](other.real()), imaginary=self.imaginary().shuffle[mask=mask](other.imaginary()))
         else:
-            return Self(rebind[Self.Value](rebind[SIMD[Self.dtype, Self.width]](self.value).shuffle[mask=mask](rebind[SIMD[Self.dtype, Self.width]](other.value))))
+            return Self(
+                rebind[Self.Value](
+                    rebind[SIMD[Self.dtype, Self.width]](self.value).shuffle[mask=mask](rebind[SIMD[Self.dtype, Self.width]](other.value))
+                )
+            )
 
     @always_inline
-    fn slice[output_width: Int, /, *, offset: Int = 0](self) -> Number[Self.dtype, output_width, complex=Self.complex]:
-        return Number[Self.dtype, output_width, complex=Self.complex](
-            rebind[Number[Self.dtype, output_width, complex=Self.complex].Value](
+    fn slice[output_width: Int, /, *, offset: Int = 0](self) -> Number[Self.dtype, output_width, complex = Self.complex]:
+        return Number[Self.dtype, output_width, complex = Self.complex](
+            rebind[Number[Self.dtype, output_width, complex = Self.complex].Value](
                 self.value.slice[2 * output_width if Self.complex else output_width, offset = 2 * offset if Self.complex else offset]()
             )
         )
 
     @always_inline
-    fn insert[*, offset: Int = 0](self, value: Number[Self.dtype, _, complex=Self.complex]) -> Self:
+    fn insert[*, offset: Int = 0](self, value: Number[Self.dtype, _, complex = Self.complex]) -> Self:
         return Self(self.value.insert[offset = 2 * offset if Self.complex else offset](value.value))
 
     @always_inline
-    fn join(self, other: Self, out result: Number[Self.dtype, 2 * Self.width, complex=Self.complex]):
-        result = Number[Self.dtype, 2 * Self.width, complex=Self.complex](rebind[Number[Self.dtype, 2 * Self.width, complex=Self.complex].Value](self.value.join(other.value)))
-
-    @always_inline
-    fn interleave(self, other: Self) -> Number[Self.dtype, 2 * Self.width, complex=Self.complex]:
-        @parameter
-        if Self.complex:
-            return Number[Self.dtype, 2 * Self.width, complex=Self.complex](
-                real=self.real().interleave(other.real()), imaginary=self.imaginary().interleave(other.imaginary())
-            )
-        else:
-            return Number[Self.dtype, 2 * Self.width, complex=Self.complex](rebind[Number[Self.dtype, 2 * Self.width, complex=Self.complex].Value](self.value.interleave(other.value)))
-
-    @always_inline
-    fn split(self) -> Tuple[Number[Self.dtype, Self.width // 2, complex=Self.complex], Number[Self.dtype, Self.width // 2, complex=Self.complex]]:
-        var split = self.value.split()
-
-        return (
-            Number[Self.dtype, Self.width // 2, complex=Self.complex](rebind[Number[Self.dtype, Self.width // 2, complex=Self.complex].Value](split[0])),
-            Number[Self.dtype, Self.width // 2, complex=Self.complex](rebind[Number[Self.dtype, Self.width // 2, complex=Self.complex].Value](split[1])),
+    fn join(self, other: Self, out result: Number[Self.dtype, 2 * Self.width, complex = Self.complex]):
+        result = Number[Self.dtype, 2 * Self.width, complex = Self.complex](
+            rebind[Number[Self.dtype, 2 * Self.width, complex = Self.complex].Value](self.value.join(other.value))
         )
 
     @always_inline
-    fn deinterleave(self) -> Tuple[Number[Self.dtype, Self.width // 2, complex=Self.complex], Number[Self.dtype, Self.width // 2, complex=Self.complex]]:
+    fn interleave(self, other: Self) -> Number[Self.dtype, 2 * Self.width, complex = Self.complex]:
+        @parameter
+        if Self.complex:
+            return Number[Self.dtype, 2 * Self.width, complex = Self.complex](
+                real=self.real().interleave(other.real()), imaginary=self.imaginary().interleave(other.imaginary())
+            )
+        else:
+            return Number[Self.dtype, 2 * Self.width, complex = Self.complex](
+                rebind[Number[Self.dtype, 2 * Self.width, complex = Self.complex].Value](self.value.interleave(other.value))
+            )
+
+    @always_inline
+    fn split(
+        self,
+    ) -> Tuple[Number[Self.dtype, Self.width // 2, complex = Self.complex], Number[Self.dtype, Self.width // 2, complex = Self.complex]]:
+        var split = self.value.split()
+
+        return (
+            Number[Self.dtype, Self.width // 2, complex = Self.complex](
+                rebind[Number[Self.dtype, Self.width // 2, complex = Self.complex].Value](split[0])
+            ),
+            Number[Self.dtype, Self.width // 2, complex = Self.complex](
+                rebind[Number[Self.dtype, Self.width // 2, complex = Self.complex].Value](split[1])
+            ),
+        )
+
+    @always_inline
+    fn deinterleave(
+        self,
+    ) -> Tuple[Number[Self.dtype, Self.width // 2, complex = Self.complex], Number[Self.dtype, Self.width // 2, complex = Self.complex]]:
         @parameter
         if Self.complex:
             var real = self.real().deinterleave()
             var imaginary = self.imaginary().deinterleave()
 
             return (
-                Number[Self.dtype, Self.width // 2, complex=Self.complex](real=real[0], imaginary=imaginary[0]),
-                Number[Self.dtype, Self.width // 2, complex=Self.complex](real=real[1], imaginary=imaginary[1]),
+                Number[Self.dtype, Self.width // 2, complex = Self.complex](real=real[0], imaginary=imaginary[0]),
+                Number[Self.dtype, Self.width // 2, complex = Self.complex](real=real[1], imaginary=imaginary[1]),
             )
         else:
             var deinterleaved = self.value.deinterleave()
 
             return (
-                Number[Self.dtype, Self.width // 2, complex=Self.complex](rebind[Number[Self.dtype, Self.width // 2, complex=Self.complex].Value](deinterleaved[0])),
-                Number[Self.dtype, Self.width // 2, complex=Self.complex](rebind[Number[Self.dtype, Self.width // 2, complex=Self.complex].Value](deinterleaved[1])),
+                Number[Self.dtype, Self.width // 2, complex = Self.complex](
+                    rebind[Number[Self.dtype, Self.width // 2, complex = Self.complex].Value](deinterleaved[0])
+                ),
+                Number[Self.dtype, Self.width // 2, complex = Self.complex](
+                    rebind[Number[Self.dtype, Self.width // 2, complex = Self.complex].Value](deinterleaved[1])
+                ),
             )
 
     @always_inline
     fn reduce[
-        func: fn[dtype: DType, width: Int] (Number[dtype, width, complex=Self.complex], Number[dtype, width, complex=Self.complex]) capturing -> Number[
-            dtype, width, complex=Self.complex
-        ],
+        func: fn[dtype: DType, width: Int] (
+            Number[dtype, width, complex = Self.complex], Number[dtype, width, complex = Self.complex]
+        ) capturing -> Number[dtype, width, complex = Self.complex],
         size_out: Int = 1,
-    ](self) -> Number[Self.dtype, size_out, complex=Self.complex]:
+    ](self) -> Number[Self.dtype, size_out, complex = Self.complex]:
         constrained[size_out <= Self.width, "Reduce must specify width less than original number width"]()
 
         @parameter
         if Self.width == size_out:
-            return rebind[Number[Self.dtype, size_out, complex=Self.complex]](self)
+            return rebind[Number[Self.dtype, size_out, complex = Self.complex]](self)
         else:
-            var lhs: Number[Self.dtype, Self.width // 2, complex=Self.complex]
-            var rhs: Number[Self.dtype, Self.width // 2, complex=Self.complex]
+            var lhs: Number[Self.dtype, Self.width // 2, complex = Self.complex]
+            var rhs: Number[Self.dtype, Self.width // 2, complex = Self.complex]
             lhs, rhs = self.split()
 
             return func(lhs, rhs).reduce[func, size_out]()
 
     @always_inline
-    fn reduce_max[size_out: Int = 1](self) -> Number[Self.dtype, size_out, complex=Self.complex]:
+    fn reduce_max[size_out: Int = 1](self) -> Number[Self.dtype, size_out, complex = Self.complex]:
         constrained[not Self.complex, "reduce_max() is only available for non-complex numbers"]()
 
-        return Number[Self.dtype, size_out, complex=Self.complex](rebind[Number[Self.dtype, size_out, complex=Self.complex].Value](self.value.reduce_max[size_out]()))
+        return Number[Self.dtype, size_out, complex = Self.complex](
+            rebind[Number[Self.dtype, size_out, complex = Self.complex].Value](self.value.reduce_max[size_out]())
+        )
 
     @always_inline
-    fn reduce_min[size_out: Int = 1](self) -> Number[Self.dtype, size_out, complex=Self.complex]:
+    fn reduce_min[size_out: Int = 1](self) -> Number[Self.dtype, size_out, complex = Self.complex]:
         constrained[not Self.complex, "reduce_min() is only available for non-complex numbers"]()
 
-        return Number[Self.dtype, size_out, complex=Self.complex](rebind[Number[Self.dtype, size_out, complex=Self.complex].Value](self.value.reduce_min[size_out]()))
+        return Number[Self.dtype, size_out, complex = Self.complex](
+            rebind[Number[Self.dtype, size_out, complex = Self.complex].Value](self.value.reduce_min[size_out]())
+        )
 
     @always_inline
-    fn reduce_add[size_out: Int = 1](self) -> Number[Self.dtype, size_out, complex=Self.complex]:
+    fn reduce_add[size_out: Int = 1](self) -> Number[Self.dtype, size_out, complex = Self.complex]:
         @always_inline
         @parameter
         fn reduce_add_body[
             dtype: DType, width: Int
-        ](v1: Number[dtype, width, complex=Self.complex], v2: Number[dtype, width, complex=Self.complex]) -> Number[dtype, width, complex=Self.complex]:
+        ](v1: Number[dtype, width, complex = Self.complex], v2: Number[dtype, width, complex = Self.complex]) -> Number[
+            dtype, width, complex = Self.complex
+        ]:
             return v1 + v2
 
         return self.reduce[reduce_add_body, size_out]()
 
     @always_inline
-    fn reduce_mul[size_out: Int = 1](self) -> Number[Self.dtype, size_out, complex=Self.complex]:
+    fn reduce_mul[size_out: Int = 1](self) -> Number[Self.dtype, size_out, complex = Self.complex]:
         @always_inline
         @parameter
         fn reduce_mul_body[
             dtype: DType, width: Int
-        ](v1: Number[dtype, width, complex=Self.complex], v2: Number[dtype, width, complex=Self.complex]) -> Number[dtype, width, complex=Self.complex]:
+        ](v1: Number[dtype, width, complex = Self.complex], v2: Number[dtype, width, complex = Self.complex]) -> Number[
+            dtype, width, complex = Self.complex
+        ]:
             return v1 * v2
 
         return self.reduce[reduce_mul_body, size_out]()
 
     @always_inline
-    fn reduce_and[size_out: Int = 1](self) -> Number[Self.dtype, size_out, complex=Self.complex]:
+    fn reduce_and[size_out: Int = 1](self) -> Number[Self.dtype, size_out, complex = Self.complex]:
         constrained[not Self.complex, "reduce_and() is only available for non-complex numbers"]()
 
-        return Number[Self.dtype, size_out, complex=Self.complex](rebind[Number[Self.dtype, size_out, complex=Self.complex].Value](self.value.reduce_and[size_out]()))
+        return Number[Self.dtype, size_out, complex = Self.complex](
+            rebind[Number[Self.dtype, size_out, complex = Self.complex].Value](self.value.reduce_and[size_out]())
+        )
 
     @always_inline
-    fn reduce_or[size_out: Int = 1](self) -> Number[Self.dtype, size_out, complex=Self.complex]:
+    fn reduce_or[size_out: Int = 1](self) -> Number[Self.dtype, size_out, complex = Self.complex]:
         constrained[not Self.complex, "reduce_or() is only available for non-complex numbers"]()
 
-        return Number[Self.dtype, size_out, complex=Self.complex](rebind[Number[Self.dtype, size_out, complex=Self.complex].Value](self.value.reduce_or[size_out]()))
+        return Number[Self.dtype, size_out, complex = Self.complex](
+            rebind[Number[Self.dtype, size_out, complex = Self.complex].Value](self.value.reduce_or[size_out]())
+        )
 
     @always_inline
     fn reduce_bit_count(self) -> Int:
@@ -735,9 +784,9 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
     @always_inline
     fn select[
         dtype_out: DType, complex_out: Bool, //
-    ](self, true_case: Number[dtype_out, Self.width, complex=complex_out], false_case: Number[dtype_out, Self.width, complex=complex_out]) -> Number[
-        dtype_out, Self.width, complex=complex_out
-    ]:
+    ](
+        self, true_case: Number[dtype_out, Self.width, complex=complex_out], false_case: Number[dtype_out, Self.width, complex=complex_out]
+    ) -> Number[dtype_out, Self.width, complex=complex_out]:
         constrained[Self.dtype == DType.bool and not Self.complex, "select() is only available for bool, non-complex numbers"]()
 
         var value = rebind[SIMD[DType.bool, Self.width]](self.value)
@@ -751,7 +800,10 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
         else:
             return Number[dtype_out, Self.width, complex=complex_out](
                 rebind[Number[dtype_out, Self.width, complex=complex_out].Value](
-                    value.select(true_case=rebind[SIMD[dtype_out, Self.width]](true_case.value), false_case=rebind[SIMD[dtype_out, Self.width]](false_case.value))
+                    value.select(
+                        true_case=rebind[SIMD[dtype_out, Self.width]](true_case.value),
+                        false_case=rebind[SIMD[dtype_out, Self.width]](false_case.value),
+                    )
                 )
             )
 
@@ -808,12 +860,12 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
     # Type Conversion
     #
     @always_inline
-    fn cast[new_dtype: DType](self) -> Number[new_dtype, Self.width, complex=Self.complex]:
+    fn cast[new_dtype: DType](self) -> Number[new_dtype, Self.width, complex = Self.complex]:
         @parameter
         if new_dtype == Self.dtype:
-            return rebind[Number[new_dtype, Self.width, complex=Self.complex]](self)
+            return rebind[Number[new_dtype, Self.width, complex = Self.complex]](self)
         else:
-            return Number[new_dtype, Self.width, complex=Self.complex](self.value.cast[new_dtype]())
+            return Number[new_dtype, Self.width, complex = Self.complex](self.value.cast[new_dtype]())
 
     @always_inline
     fn as_complex[new_dtype: DType = Self.dtype](self) -> Number[new_dtype, Self.width, complex=True]:
@@ -823,7 +875,9 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
         elif Self.complex:
             return rebind[Number[new_dtype, Self.width, complex=True]](self.cast[new_dtype]())
         else:
-            return Number[new_dtype, Self.width, complex=True](real=rebind[Number[new_dtype, Self.width, complex=False].Value](self.value.cast[new_dtype]()), imaginary=0)
+            return Number[new_dtype, Self.width, complex=True](
+                real=rebind[Number[new_dtype, Self.width, complex=False].Value](self.value.cast[new_dtype]()), imaginary=0
+            )
 
     #
     # Stringable & Writable

@@ -40,16 +40,16 @@ struct Filters:
         ]()
 
         if size == 1:
-            return Matrix[dtype, depth, complex=complex].strided_replication(
-                rows=size, cols=1, values=[1.0]
-            )
+            return Matrix[dtype, depth, complex=complex].strided_replication(rows=size, cols=1, values=[1.0])
         elif std_dev:
             var result = Matrix[DType.float64, depth, complex=complex](rows=size, cols=1)
             var variance = std_dev.value() ** 2
 
             try:
                 for i in range(size):
-                    result.store_full_depth(result.create_full_depth_value(exp(-((i - (size - 1) / 2) ** 2) / (2 * variance))), row=i, col=0)
+                    result.store_full_depth(
+                        result.create_full_depth_value(exp(-((i - (size - 1) / 2) ** 2) / (2 * variance))), row=i, col=0
+                    )
             except error:
                 abort(String(error))
 
@@ -58,9 +58,7 @@ struct Filters:
             return result.as_type[dtype]()
         else:
             if size == 3:
-                return Matrix[dtype, depth, complex=complex].strided_replication(
-                    rows=size, cols=1, values=[0.250, 0.500, 0.250]
-                )
+                return Matrix[dtype, depth, complex=complex].strided_replication(rows=size, cols=1, values=[0.250, 0.500, 0.250])
             elif size == 5:
                 return Matrix[dtype, depth, complex=complex].strided_replication(
                     rows=size, cols=1, values=[0.062500, 0.250000, 0.375000, 0.250000, 0.062500]
@@ -74,9 +72,15 @@ struct Filters:
                     rows=size,
                     cols=1,
                     values=[
-                        0.015625000, 0.050781250, 0.117187500,
-                        0.199218750, 0.234375000, 0.199218750,
-                        0.117187500, 0.050781250, 0.015625000,
+                        0.015625000,
+                        0.050781250,
+                        0.117187500,
+                        0.199218750,
+                        0.234375000,
+                        0.199218750,
+                        0.117187500,
+                        0.050781250,
+                        0.015625000,
                     ],
                 )
             else:
@@ -85,7 +89,9 @@ struct Filters:
 
                 try:
                     for i in range(size):
-                        result.store_full_depth(result.create_full_depth_value(exp(-((i - (size - 1) / 2) ** 2) / (2 * variance))), row=i, col=0)
+                        result.store_full_depth(
+                            result.create_full_depth_value(exp(-((i - (size - 1) / 2) ** 2) / (2 * variance))), row=i, col=0
+                        )
                 except error:
                     abort(String(error))
 
