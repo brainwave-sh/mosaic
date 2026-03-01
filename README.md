@@ -1,5 +1,6 @@
 <div align="center">
-  <img src="assets/logo.png" alt="Mosaic Logo" width="280">
+  <img src="assets/logo.png#gh-light-mode-only" alt="Mosaic Logo" width="280">
+  <img src="assets/logo-dark-mode.png#gh-dark-mode-only" alt="Mosaic Logo" width="280">
   <p>
     An open source computer vision library in Mojo
     
