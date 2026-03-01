@@ -426,13 +426,13 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
     fn __lt__(self, rhs: Self) -> SIMD[DType.bool, width]:
         constrained[not complex, "__lt__() is only available for non-complex numbers"]()
 
-        return rebind[SIMD[DType.bool, width]](self.value < rhs.value)
+        return rebind[SIMD[DType.bool, width]](self.value.lt(rhs.value))
 
     @always_inline
     fn __le__(self, rhs: Self) -> SIMD[DType.bool, width]:
         constrained[not complex, "__le__() is only available for non-complex numbers"]()
 
-        return rebind[SIMD[DType.bool, width]](self.value <= rhs.value)
+        return rebind[SIMD[DType.bool, width]](self.value.le(rhs.value))
 
     @always_inline
     fn __eq__(self, rhs: Self) -> SIMD[DType.bool, width]:
@@ -446,23 +446,27 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
 
             return result
         else:
-            return rebind[SIMD[DType.bool, width]](self.value == rhs.value)
+            return rebind[SIMD[DType.bool, width]](self.value.eq(rhs.value))
 
     @always_inline
     fn __ne__(self, rhs: Self) -> SIMD[DType.bool, width]:
-        return not (self == rhs)
+        @parameter
+        if complex:
+            return ~self.__eq__(rhs)
+        else:
+            return rebind[SIMD[DType.bool, width]](self.value.ne(rhs.value))
 
     @always_inline
     fn __gt__(self, rhs: Self) -> SIMD[DType.bool, width]:
         constrained[not complex, "__gt__() is only available for non-complex numbers"]()
 
-        return rebind[SIMD[DType.bool, width]](self.value > rhs.value)
+        return rebind[SIMD[DType.bool, width]](self.value.gt(rhs.value))
 
     @always_inline
     fn __ge__(self, rhs: Self) -> SIMD[DType.bool, width]:
         constrained[not complex, "__ge__() is only available for non-complex numbers"]()
 
-        return rebind[SIMD[DType.bool, width]](self.value >= rhs.value)
+        return rebind[SIMD[DType.bool, width]](self.value.ge(rhs.value))
 
     @always_inline
     fn __invert__(self) -> Self:
@@ -855,9 +859,14 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
             if width > 1:
                 writer.write("]")
         else:
-            var rounded = round(self.value, ndigits=print_precision)
 
-            if isclose(rounded, 0, atol=10**-print_precision):
-                writer.write(abs(rounded))
+            @parameter
+            if dtype.is_floating_point():
+                var rounded = round(self.value, ndigits=print_precision)
+
+                if isclose(rounded, 0, atol=10**-print_precision):
+                    writer.write(abs(rounded))
+                else:
+                    writer.write(rounded)
             else:
-                writer.write(rounded)
+                writer.write(self.value)
