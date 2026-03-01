@@ -8,7 +8,7 @@
 from testing import assert_true, assert_equal, TestSuite
 
 from mosaic.image import Image, ImageFile, ColorSpace, Border, Interpolation
-from mosaic.numeric import Matrix, ScalarNumber
+from mosaic.numeric import Matrix
 
 comptime input = "tests/data/input/"
 comptime expected = "tests/data/output/"
@@ -54,11 +54,7 @@ fn test_detect_edges() raises:
     var kernel = Matrix[DType.float64, ColorSpace.greyscale.channels()](
         rows=3,
         cols=3,
-        values=[
-            ScalarNumber[DType.float64](0),  ScalarNumber[DType.float64](1), ScalarNumber[DType.float64](0),
-            ScalarNumber[DType.float64](1), ScalarNumber[DType.float64](-4), ScalarNumber[DType.float64](1),
-            ScalarNumber[DType.float64](0),  ScalarNumber[DType.float64](1), ScalarNumber[DType.float64](0),
-        ],
+        values=[0, 1, 0, 1, -4, 1, 0, 1, 0],
     )
     var result = image.filtered[Border.reflect](kernel).as_type[DType.uint8]()
 
