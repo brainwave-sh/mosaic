@@ -375,6 +375,9 @@ struct Image[color_space: ColorSpace, dtype: DType](
     fn __ne__(self, other: Self) -> Bool:
         return not (self == other)
 
+    fn matches(self, other: Self, tolerance: Int = 1) -> Bool:
+        return self._matrix.matches(other._matrix, tolerance)
+
     #
     # Operators (Scalar)
     #

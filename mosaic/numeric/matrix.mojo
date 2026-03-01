@@ -672,6 +672,28 @@ struct Matrix[dtype: DType, depth: Int = 1, *, complex: Bool = False](
     fn __ne__(self, other: Self) -> Bool:
         return not (self == other)
 
+    fn matches(self, other: Self, tolerance: Int = 1) -> Bool:
+        if self.count() != other.count():
+            return False
+
+        for index in range(self.count()):
+
+            @parameter
+            if Self.dtype.is_floating_point():
+                if not isclose(
+                    self._data[index].value,
+                    other._data[index].value,
+                    atol=Float64(tolerance),
+                ):
+                    return False
+            else:
+                var value = self._data[index].value.cast[DType.int64]()
+                var other_value = other._data[index].value.cast[DType.int64]()
+                if abs(value - other_value) > Scalar[DType.int64](tolerance):
+                    return False
+
+        return True
+
     #
     # Operators (Scalar)
     #

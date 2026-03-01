@@ -20,7 +20,7 @@ fn test_blur_image() raises:
     var result = image.as_type[DType.uint8]()
 
     var reference = Image[ColorSpace.rgb, DType.uint8](expected + "blur_image.png")
-    assert_true(result == reference)
+    assert_true(result.matches(reference))
 
 
 fn test_convert_as_type() raises:
@@ -28,7 +28,7 @@ fn test_convert_as_type() raises:
     var result = image.converted_as_type[ColorSpace.greyscale, DType.uint8]()
 
     var reference = Image[ColorSpace.greyscale, DType.uint8](expected + "convert_as_type.png")
-    assert_true(result == reference)
+    assert_true(result.matches(reference))
 
 
 fn test_convert_color_space() raises:
@@ -36,7 +36,7 @@ fn test_convert_color_space() raises:
     var result = image.converted[ColorSpace.greyscale]()
 
     var reference = Image[ColorSpace.greyscale, DType.uint8](expected + "convert_color_space.png")
-    assert_true(result == reference)
+    assert_true(result.matches(reference))
 
 
 fn test_convert_type() raises:
@@ -44,7 +44,7 @@ fn test_convert_type() raises:
     var result = image.as_type[DType.float64]().as_type[DType.uint8]()
 
     var reference = Image[ColorSpace.rgb, DType.uint8](expected + "convert_type.png")
-    assert_true(result == reference)
+    assert_true(result.matches(reference))
 
 
 fn test_detect_edges() raises:
@@ -59,7 +59,7 @@ fn test_detect_edges() raises:
     var result = image.filtered[Border.reflect](kernel).as_type[DType.uint8]()
 
     var reference = Image[ColorSpace.greyscale, DType.uint8](expected + "detect_edges.png")
-    assert_true(result == reference)
+    assert_true(result.matches(reference))
 
 
 fn test_extract_channel() raises:
@@ -68,7 +68,7 @@ fn test_extract_channel() raises:
     var result = Image[ColorSpace.rgb, DType.uint8].with_single_channel_data[1](green)
 
     var reference = Image[ColorSpace.rgb, DType.uint8](expected + "extract_channel.png")
-    assert_true(result == reference)
+    assert_true(result.matches(reference))
 
 
 fn test_flip_image() raises:
@@ -76,7 +76,7 @@ fn test_flip_image() raises:
     var result = image.flipped_vertically()
 
     var reference = Image[ColorSpace.rgb, DType.uint8](expected + "flip_image.png")
-    assert_true(result == reference)
+    assert_true(result.matches(reference))
 
 
 fn test_fourier_transform() raises:
@@ -89,7 +89,7 @@ fn test_fourier_transform() raises:
     var result = image.horizontally_stacked(spec_img)
 
     var reference = Image[ColorSpace.greyscale, DType.uint8](expected + "fourier_transform.png")
-    assert_true(result == reference)
+    assert_true(result.matches(reference))
 
 
 fn test_high_pass_filter() raises:
@@ -112,7 +112,7 @@ fn test_high_pass_filter() raises:
     var result = image.horizontally_stacked(hp_spectral_image).horizontally_stacked(hp_filtered)
 
     var reference = Image[ColorSpace.greyscale, DType.uint8](expected + "high_pass_filter.png")
-    assert_true(result == reference)
+    assert_true(result.matches(reference))
 
 
 fn test_inverse_fourier_transform() raises:
@@ -125,7 +125,7 @@ fn test_inverse_fourier_transform() raises:
     var result = spectral_image.horizontally_stacked(recreated)
 
     var reference = Image[ColorSpace.greyscale, DType.uint8](expected + "inverse_fourier_transform.png")
-    assert_true(result == reference)
+    assert_true(result.matches(reference))
 
 
 fn test_pad_image() raises:
@@ -133,7 +133,7 @@ fn test_pad_image() raises:
     var result = image.padded[Border.zero](height=44, width=44)
 
     var reference = Image[ColorSpace.rgb, DType.uint8](expected + "pad_image.png")
-    assert_true(result == reference)
+    assert_true(result.matches(reference))
 
 
 fn test_picture_in_picture() raises:
@@ -145,7 +145,7 @@ fn test_picture_in_picture() raises:
     image.store_sub_image(padded_head, y=20, x=20)
 
     var reference = Image[ColorSpace.rgb, DType.uint8](expected + "picture_in_picture.png")
-    assert_true(image == reference)
+    assert_true(image.matches(reference))
 
 
 fn test_resize_image() raises:
@@ -153,7 +153,7 @@ fn test_resize_image() raises:
     var result = image.resized[Interpolation.bilinear](height=256, width=512)
 
     var reference = Image[ColorSpace.rgb, DType.uint8](expected + "resize_image.png")
-    assert_true(result == reference)
+    assert_true(result.matches(reference))
 
 
 fn test_rotate_image() raises:
@@ -161,7 +161,7 @@ fn test_rotate_image() raises:
     var result = image.rotated_90[clockwise=True]()
 
     var reference = Image[ColorSpace.rgb, DType.uint8](expected + "rotate_image.png")
-    assert_true(result == reference)
+    assert_true(result.matches(reference))
 
 
 fn test_scale_image() raises:
@@ -169,7 +169,7 @@ fn test_scale_image() raises:
     var result = image.scaled[interpolation = Interpolation.bilinear](0.5)
 
     var reference = Image[ColorSpace.rgb, DType.uint8](expected + "scale_image.png")
-    assert_true(result == reference)
+    assert_true(result.matches(reference))
 
 
 fn test_slice_image() raises:
@@ -177,7 +177,7 @@ fn test_slice_image() raises:
     var result = image[: image.height() // 2, :].deep_copy()
 
     var reference = Image[ColorSpace.rgb, DType.uint8](expected + "slice_image.png")
-    assert_true(result == reference)
+    assert_true(result.matches(reference))
 
 
 fn test_unsharp_mask() raises:
@@ -189,7 +189,7 @@ fn test_unsharp_mask() raises:
     var result = original.as_type[DType.uint8]().horizontally_stacked(unsharp.as_type[DType.uint8]())
 
     var reference = Image[ColorSpace.rgb, DType.uint8](expected + "unsharp_mask.png")
-    assert_true(result == reference)
+    assert_true(result.matches(reference))
 
 
 fn main() raises:
