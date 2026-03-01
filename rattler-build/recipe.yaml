@@ -14,9 +14,6 @@ package:
 
 source:
   - path: ..
-  # For release builds, replace with:
-  # - git: https://github.com/brainwave-sh/mosaic.git
-  #   rev: <tag or commit>
 
 build:
   number: 0
@@ -30,12 +27,12 @@ requirements:
   build:
     - clangxx>=18
   host:
-    - mojo==0.26.1
+    - mojo-compiler==0.26.1
     - if: osx
       then:
         - libcxx
   run:
-    - ${{ pin_compatible('mojo') }}
+    - ${{ pin_compatible('mojo-compiler') }}
     - if: osx
       then:
         - ${{ pin_compatible('libcxx') }}
@@ -48,7 +45,8 @@ tests:
     files:
       source:
         - tests/**.mojo
-        - tests/data
+        - tests/data/input/
+        - tests/data/output/
 
 about:
   homepage: https://mosaiclib.org
