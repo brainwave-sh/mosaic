@@ -30,8 +30,7 @@ channels = [
 ]
 
 [dependencies]
-modular = "==26.1.0"
-python = ">=3.12,<3.13"
+mojo = ">=0.26.1.0,<0.27"
 clangxx = ">=18"
 
 [system-requirements]
