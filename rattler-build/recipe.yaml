@@ -4,8 +4,6 @@
 #
 # Created by Christian Bator on 03/11/2025
 #
-# Usage: pixi run package
-#
 
 context:
   version: "0.1.0"
