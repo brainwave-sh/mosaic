@@ -7,15 +7,15 @@
 
 [project]
 # These should match rattler-build/recipe.yaml > context
-version = "0.0.1"
+version = "0.1.0"
 
 # These should match rattler-build/recipe.yaml > about
 homepage = "https://mosaiclib.org"
 license = "Apache-2.0"
 license-file = "LICENSE"
-description = "An open source computer vision library in Mojo" # This is "summary" in recipe.yaml
-repository = "https://github.com/christianbator/mosaic"
-documentation = "https://mosaiclib.org/docs"
+description = "An image processing library in Mojo" # This is "summary" in recipe.yaml
+repository = "https://github.com/brainwave-sh/mosaic"
+documentation = "https://brainwave.sh/mosaic"
 
 # These should match rattler-build/recipe.yaml > extra
 name = "mosaic"
@@ -25,13 +25,14 @@ authors = ["Christian Bator <christian@bator.co>"]
 readme = "README.md"
 platforms = ["osx-arm64", "linux-aarch64", "linux-64"]
 channels = [
-    "https://conda.modular.com/max",
+    "https://prefix.dev/max",
     "conda-forge"
 ]
 
 [dependencies]
 mojo = ">=0.26.1.0,<0.27"
 clangxx = ">=18"
+rattler-build = ">=0.58.2,<0.59"
 
 [system-requirements]
 macos = "15.0"
@@ -53,3 +54,6 @@ cmd = """ bash -c '
     done
 '
 """
+
+[tasks.package]
+cmd = "rattler-build build --recipe rattler-build/recipe.yaml -c https://prefix.dev/max -c conda-forge"
