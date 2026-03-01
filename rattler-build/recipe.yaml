@@ -25,14 +25,13 @@ build:
           - /usr/lib/swift/libswift*.dylib
 requirements:
   build:
-    - clangxx>=18
+    - clangxx>=22.1.0,<23
   host:
     - mojo-compiler==0.26.1
     - if: osx
       then:
         - libcxx
   run:
-    - ${{ pin_compatible('mojo-compiler') }}
     - if: osx
       then:
         - ${{ pin_compatible('libcxx') }}
@@ -45,8 +44,7 @@ tests:
     files:
       source:
         - tests/**.mojo
-        - tests/data/input/
-        - tests/data/output/
+        - tests/data/
 
 about:
   homepage: https://mosaiclib.org
