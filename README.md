@@ -207,7 +207,7 @@ pixi run mojo load_image.mojo
 </div>
 
 ## Documentation
-Docs are available at [brainwave.sh/mosaic](https://brainwave.sh/mosaic).
+Docs are available at [brainwave.sh/mosaic](https://brainwave.sh/mosaic)
 
 ## Acknowledgements
 Mosaic makes use of vendored libraries to help with image codecs and FFTs, many thanks to:
