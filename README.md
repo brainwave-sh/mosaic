@@ -2,7 +2,7 @@
   <img src="assets/logo.png#gh-light-mode-only" alt="Mosaic Logo" width="280">
   <img src="assets/logo-dark-mode.png#gh-dark-mode-only" alt="Mosaic Logo" width="280">
   <p>
-    An open source computer vision library in Mojo
+    An image processing library in Mojo
     
   ![Language Badge](https://img.shields.io/badge/language-mojo-orange)
   ![GitHub License Badge](https://img.shields.io/github/license/christianbator/mosaic)
@@ -13,16 +13,18 @@
 <p align="center">
   <a href="#overview">Overview</a> •
   <a href="#installation">Installation</a> •
-  <a href="#examples">Examples</a>
+  <a href="#examples">Examples</a> •
+  <a href="#documentation">Documentation</a> •
+  <a href="#acknowledgements">Acknowledgements</a>
 </p>
 
 ## Overview
 #### Description
-Mosaic is a cross-platform (macOS and linux) computer vision library for prototyping and production.
+Mosaic is a cross-platform (macOS and linux) image processing library for prototyping and production.
 
-By transparently leveraging hardware acceleration and using the latest MLIR compiler technology, Mosaic is the first computer vision library built specifically for heterogenous compute: CPUs, GPUs, XPUs.
+By transparently leveraging hardware acceleration, Mosaic is built specifically for heterogenous compute: CPUs, GPUs, and more in the future.
 
-It unifies the computer vision workflow into one language that runs on any hardware.
+It can unify image processing workflows into one language that runs on any hardware.
 
 #### Principles
 1. Easy to use
@@ -34,7 +36,7 @@ It unifies the computer vision workflow into one language that runs on any hardw
   - Image file encoding and decoding
   - Data type specification (at compile time)
   - Color space specification (at compile time)
-- Image processing
+- Image transformation
   - Filtering
   - Geometric transforms
   - Fourier transforms
@@ -42,7 +44,7 @@ It unifies the computer vision workflow into one language that runs on any hardw
   - Native image rendering
 - Hardware acceleration
   - Parallelization and SIMD on CPUs
-  - GPU acceleration when available
+  - GPU acceleration when available (coming soon)
 
 ## Installation
 #### Prerequisites
@@ -50,7 +52,7 @@ It unifies the computer vision workflow into one language that runs on any hardw
 
 #### Using the pixi cli
 ```bash
-pixi add mosaic
+pixi add mosaic-mojo
 ```
 
 #### After installation
@@ -60,7 +62,7 @@ The `pixi.toml` file should include the Modular community channel and the Mosaic
 channels = ["https://repo.prefix.dev/modular-community"]
 
 [dependencies]
-mosaic = "*"
+mosaic-mojo = "*"
 ```
 
 ## Examples
@@ -73,7 +75,7 @@ pixi run build
 ```
 
 #### Running an example
-Run an example file from the `examples/` directory like so:
+After building, run an example file from the `examples/` directory like so:
 ```zsh
 cd examples
 pixi run mojo load_image.mojo
@@ -203,3 +205,11 @@ pixi run mojo load_image.mojo
 <div align="center">
   <img src="assets/examples/high-pass-filter.png" width="768">
 </div>
+
+## Documentation
+Docs are available at [brainwave.sh/mosaic](https://brainwave.sh/mosaic).
+
+## Acknowledgements
+Mosaic makes use of vendored libraries to help with image codecs and FFTs, many thanks to:
+- [stb_image](https://github.com/nothings/stb) by Sean Barrett
+- [pocketfft](https://github.com/mreineck/pocketfft) by Martin Reinecke
