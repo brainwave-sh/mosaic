@@ -24,7 +24,7 @@ from .filters import Filters
 # Image
 #
 struct Image[color_space: ColorSpace, dtype: DType](
-    Absable, Ceilable, CeilDivable, EqualityComparable, ExplicitlyCopyable, Floorable, Movable, Roundable, Stringable, Truncable, Writable
+    Absable, CeilDivable, Ceilable, EqualityComparable, ExplicitlyCopyable, Floorable, Movable, Roundable, Stringable, Truncable, Writable
 ):
     #
     # Fields
@@ -62,8 +62,11 @@ struct Image[color_space: ColorSpace, dtype: DType](
     @staticmethod
     fn from_spectrum[
         spectrum_dtype: DType, //
-    ](spectrum: Matrix[spectrum_dtype, color_space.channels(), complex=True], lower_bound: Int, upper_bound: Int) -> Self:
-        return Self.from_spectrum(spectrum, lower_bound=Float64(lower_bound), upper_bound=Float64(upper_bound))
+    ](spectrum: Matrix[spectrum_dtype, color_space.channels(), complex=True], lower_bound: Scalar[DType.int64], upper_bound: Scalar[DType.int64]) -> Self:
+        var real = spectrum.fourier_transform[inverse=True]().real()
+        real.map_to_range(lower_bound.cast[fft_dtype](), upper_bound.cast[fft_dtype]())
+
+        return Self(real.as_type[dtype]())
 
     @staticmethod
     fn from_spectrum[
@@ -691,11 +694,11 @@ struct Image[color_space: ColorSpace, dtype: DType](
     fn rotated_180(self) -> Self:
         return Self(self._matrix.rotated_180())
 
-    fn scaled[interpolation: Interpolation = Interpolation.bilinear](self, factor: Int) -> Self:
-        return self.resized[interpolation](height=factor * self.height(), width=factor * self.width())
+    fn scaled[interpolation: Interpolation = Interpolation.bilinear](self, factor: Float64) -> Self:
+        return self.resized[interpolation](height=Int(factor * self.height()), width=Int(factor * self.width()))
 
     fn scaled[T: Floatable, //, interpolation: Interpolation = Interpolation.bilinear](self, factor: T) -> Self:
-        return self.resized[interpolation](height=Int(factor.__float__() * self.height()), width=Int(factor.__float__() * self.width()))
+        return self.resized[interpolation](height=Int(Float64(factor) * self.height()), width=Int(Float64(factor) * self.width()))
 
     fn resized[interpolation: Interpolation = Interpolation.bilinear](self, height: Int, width: Int) -> Self:
         @parameter
@@ -752,7 +755,7 @@ struct Image[color_space: ColorSpace, dtype: DType](
                     var fractional_x = (x + SIMDRange[simd_width]().cast[DType.float64]()) * self.width() / width
                     var x1 = floor(fractional_x).cast[DType.index]()
                     var x2 = (x1 + 1).clamp(0, self.width() - 1)
-                    var x_in_bounds = (x1 != x2)
+                    var x_in_bounds = x1 != x2
 
                     var top_left = self._matrix.strided_gather(row=y1, col=Int(x1[0]), component=channel, offset=x1 - x1[0], mask=True).value.cast[
                         DType.float64

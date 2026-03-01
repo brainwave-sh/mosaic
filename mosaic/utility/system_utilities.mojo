@@ -6,13 +6,14 @@
 #
 
 from os import abort
-from sys import info, simdwidthof
+from sys import simdwidthof
+from sys.info import CompilationTarget
 
 
 @parameter
 fn optimal_simd_width[dtype: DType]() -> Int:
     @parameter
-    if info.is_apple_silicon():
+    if CompilationTarget.is_macos():
         return 4 * simdwidthof[dtype]()
     else:
         return 2 * simdwidthof[dtype]()
@@ -23,11 +24,9 @@ alias unroll_factor = 4
 
 @parameter
 fn dynamic_library_filepath(name: String) -> String:
-    if info.os_is_linux():
+    if CompilationTarget.is_linux():
         return name + ".so"
-    elif info.os_is_macos():
+    elif CompilationTarget.is_macos():
         return name + ".dylib"
-    elif info.os_is_windows():
-        return name + ".dll"
     else:
         return abort[String]("Unsupported os for dynamic library filepath determination")

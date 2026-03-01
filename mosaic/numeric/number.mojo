@@ -9,8 +9,10 @@ from math import sqrt, log, atan2, Ceilable, CeilDivable, Floorable, Truncable, 
 from complex import ComplexSIMD
 from builtin.dtype import _integral_type_of
 from sys import is_big_endian
+from sys.info import sizeof
 from collections import InlineArray
 from utils import IndexList
+from hashlib import Hasher
 
 #
 # Type Aliases
@@ -30,15 +32,15 @@ alias print_precision = 3
 struct Number[dtype: DType, width: Int, *, complex: Bool = False](
     Absable,
     Boolable,
-    Ceilable,
     CeilDivable,
+    Ceilable,
     Copyable,
     ExplicitlyCopyable,
     Floatable,
     Floorable,
     Hashable,
-    Intable,
     Indexer,
+    Intable,
     Roundable,
     Stringable,
     Truncable,
@@ -521,8 +523,8 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
 
         return Self(self.value.__floor__())
 
-    fn __hash__(self) -> UInt:
-        return self.value.__hash__()
+    fn __hash__[H: Hasher](self, mut hasher: H):
+        return self.value.__hash__(hasher)
 
     @always_inline
     fn __int__(self) -> Int:
@@ -561,16 +563,18 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
     fn to_bits[int_dtype: DType = _integral_type_of[dtype]()](self) -> Number[int_dtype, width, complex=complex]:
         return Number[int_dtype, width, complex=complex](self.value.to_bits())
 
-    @staticmethod
-    fn from_bytes[big_endian: Bool = is_big_endian()](bytes: InlineArray[Byte, dtype.sizeof()]) -> Self:
-        constrained[width == 1 and not complex, "from_bytes() is only available for scalar, non-complex numbers"]()
+    # @staticmethod
+    # fn from_bytes[*, big_endian: Bool = is_big_endian()](bytes: InlineArray[Byte, sizeof[SIMD[dtype, width]]()]) -> Self:
+    #     constrained[width == 1 and not complex, "from_bytes() is only available for scalar, non-complex numbers"]()
 
-        return Self(Scalar[dtype].from_bytes(bytes))
+    #     var result: Scalar[dtype] = Scalar[dtype].from_bytes(bytes)
 
-    fn as_bytes[big_endian: Bool = is_big_endian()](self) -> InlineArray[Byte, dtype.sizeof()]:
-        constrained[width == 1 and not complex, "as_bytes() is only available for scalar, non-complex numbers"]()
+    #     return Self(result)
 
-        return self.value.as_bytes()
+    # fn as_bytes[*, big_endian: Bool = is_big_endian()](self) -> InlineArray[Byte, sizeof[SIMD[dtype, width]]()]:
+    #     constrained[width == 1 and not complex, "as_bytes() is only available for scalar, non-complex numbers"]()
+
+    #     return self.value.as_bytes()
 
     fn clamp(self, lower_bound: Number[dtype, width, complex=False], upper_bound: Number[dtype, width, complex=False]) -> Self:
         constrained[not complex, "clamp() is only available for non-complex numbers"]()

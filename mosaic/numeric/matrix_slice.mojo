@@ -14,7 +14,6 @@ from mosaic.utility import unroll_factor
 #
 # MatrixSlice
 #
-@value
 struct MatrixSlice[
     mut: Bool, //,
     depth_range: StridedRange,
@@ -22,7 +21,7 @@ struct MatrixSlice[
     depth: Int,
     complex: Bool,
     origin: Origin[mut],
-](Stringable, Writable):
+](Copyable, Movable, Stringable, Writable):
     #
     # Fields
     #

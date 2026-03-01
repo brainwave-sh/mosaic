@@ -20,7 +20,7 @@ from .fft import fft, fft_dtype
 # Matrix
 #
 struct Matrix[dtype: DType, depth: Int = 1, *, complex: Bool = False](
-    Absable, Ceilable, CeilDivable, EqualityComparable, ExplicitlyCopyable, Floorable, Movable, Roundable, Stringable, Truncable, Writable
+    Absable, CeilDivable, Ceilable, EqualityComparable, ExplicitlyCopyable, Floorable, Movable, Roundable, Stringable, Truncable, Writable
 ):
     #
     # Fields

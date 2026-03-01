@@ -30,7 +30,7 @@ channels = [
 ]
 
 [dependencies]
-max = "==25.4.0"
+modular = "==25.5.0"
 
 [system-requirements]
 macos = "15.0"

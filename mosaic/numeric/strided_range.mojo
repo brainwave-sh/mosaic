@@ -12,8 +12,7 @@ from math import ceildiv
 #
 # StridedRange
 #
-@value
-struct StridedRange(Stringable, Writable):
+struct StridedRange(Copyable, Movable, Stringable, Writable):
     #
     # Fields
     #

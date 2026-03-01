@@ -27,8 +27,7 @@ fn _load_libcodec() -> _OwnedDLHandle:
 #
 # ImageFile
 #
-@value
-struct ImageFile(EqualityComparable, Stringable, Writable):
+struct ImageFile(Copyable, EqualityComparable, Movable, Stringable, Writable):
     #
     # Supported File Types
     #

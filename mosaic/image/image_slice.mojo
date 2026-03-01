@@ -17,8 +17,7 @@ from mosaic.utility import unroll_factor
 #
 # ImageSlice
 #
-@value
-struct ImageSlice[mut: Bool, //, color_space: ColorSpace, dtype: DType, origin: Origin[mut]](Stringable, Writable):
+struct ImageSlice[mut: Bool, //, color_space: ColorSpace, dtype: DType, origin: Origin[mut]](Copyable, Movable, Stringable, Writable):
     #
     # Fields
     #

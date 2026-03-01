@@ -12,8 +12,7 @@ from sys.ffi import c_int
 #
 # ColorSpace
 #
-@value
-struct ColorSpace(EqualityComparable, Stringable, Writable):
+struct ColorSpace(Copyable, EqualityComparable, Movable, Stringable, Writable):
     #
     # Supported Color Spaces
     #
