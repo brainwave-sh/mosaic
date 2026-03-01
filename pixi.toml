@@ -32,10 +32,11 @@ channels = [
 [dependencies]
 modular = "==26.1.0"
 python = ">=3.12,<3.13"
+clangxx = ">=18"
 
 [system-requirements]
 macos = "15.0"
-linux = "6.6"
+linux = "5.15"
 
 [tasks.build]
 env = { PREFIX = "$CONDA_PREFIX" }
