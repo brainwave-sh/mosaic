@@ -4,6 +4,9 @@
 //
 // Created by Christian Bator on 05/02/2025
 //
+// Vendored dependencies:
+//   pocketfft 8187407446316c3d16f15e5395dabd4b22f4fec7 (https://github.com/mreineck/pocketfft)
+//
 
 #include "fft.h"
 

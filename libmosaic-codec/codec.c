@@ -4,6 +4,10 @@
 //
 //  Created by Christian Bator on 12/14/2024
 //
+//  Vendored dependencies:
+//    stb_image v2.30       (https://github.com/nothings/stb)
+//    stb_image_write v1.16 (https://github.com/nothings/stb)
+//
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
