@@ -4,6 +4,8 @@
 #
 # Created by Christian Bator on 03/11/2025
 #
+# Usage: rattler-build build --recipe rattler-build/recipe.yaml -c https://prefix.dev/max -c conda-forge
+#
 
 context:
   version: "0.1.0"
@@ -41,6 +43,9 @@ tests:
       for test_file in tests/test_*.mojo; do
         mojo run ${test_file} || exit 1
       done
+    requirements:
+      run:
+        - mojo==0.26.1
     files:
       source:
         - tests/**.mojo
