@@ -7,6 +7,6 @@
 
 
 @fieldwise_init
-struct Size(Copyable, Movable):
+struct Size(ImplicitlyCopyable, Movable):
     var height: Int
     var width: Int

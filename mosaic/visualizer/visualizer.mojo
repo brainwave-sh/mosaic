@@ -15,7 +15,7 @@ from mosaic.image import Image, ImageSlice, ColorSpace
 #
 # Backend
 #
-alias _libvisualizer = _Global["libvisualizer", _OwnedDLHandle, _load_libvisualizer]()
+alias _libvisualizer = _Global["libvisualizer", _load_libvisualizer]()
 
 
 fn _load_libvisualizer() -> _OwnedDLHandle:
@@ -39,7 +39,7 @@ struct Visualizer:
     #
     @staticmethod
     fn show[dtype: DType, color_space: ColorSpace, //](image_slice: ImageSlice[color_space, dtype], window_title: String):
-        Self.show(image=image_slice.copy(), window_title=window_title)
+        Self.show(image=image_slice.deep_copy(), window_title=window_title)
 
     #
     # Image
@@ -61,26 +61,29 @@ struct Visualizer:
             )
 
     @staticmethod
-    fn _show[dtype: DType, color_space: ColorSpace, //](image: Image[color_space, dtype], owned window_title: String):
-        var show = _get_dylib_function[
-            _libvisualizer,
-            "show",
-            fn (
-                data: UnsafePointer[UInt8],
-                height: c_int,
-                width: c_int,
-                channels: c_int,
-                window_title: UnsafePointer[c_char],
-            ) -> None,
-        ]()
+    fn _show[dtype: DType, color_space: ColorSpace, //](image: Image[color_space, dtype], var window_title: String):
+        try:
+            var show = _get_dylib_function[
+                _libvisualizer,
+                "show",
+                fn (
+                    data: UnsafePointer[UInt8],
+                    height: c_int,
+                    width: c_int,
+                    channels: c_int,
+                    window_title: UnsafePointer[c_char],
+                ) -> None,
+            ]()
 
-        show(
-            data=image.unsafe_uint8_ptr(),
-            height=c_int(image.height()),
-            width=c_int(image.width()),
-            channels=c_int(image.channels()),
-            window_title=window_title.unsafe_cstr_ptr(),
-        )
+            show(
+                data=image.unsafe_uint8_ptr(),
+                height=c_int(image.height()),
+                width=c_int(image.width()),
+                channels=c_int(image.channels()),
+                window_title=window_title.unsafe_cstr_ptr(),
+            )
+        except:
+            abort()
 
     #
     # Run Loop
@@ -91,6 +94,9 @@ struct Visualizer:
 
     @staticmethod
     fn wait(timeout: Float32) -> Bool:
-        var wait = _get_dylib_function[_libvisualizer, "wait", fn (timeout: c_float) -> Bool]()
+        try:
+            var wait = _get_dylib_function[_libvisualizer, "wait", fn (timeout: c_float) -> Bool]()
 
-        return wait(c_float(timeout))
+            return wait(c_float(timeout))
+        except:
+            return abort[Bool]()

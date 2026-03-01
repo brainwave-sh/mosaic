@@ -8,6 +8,7 @@
 from memory import Pointer
 from algorithm import parallelize, vectorize
 from pathlib import Path
+from sys.info import bit_width_of
 
 from mosaic.numeric import Matrix, MatrixSlice
 from mosaic.numeric import StridedRange
@@ -17,7 +18,7 @@ from mosaic.utility import unroll_factor
 #
 # ImageSlice
 #
-struct ImageSlice[mut: Bool, //, color_space: ColorSpace, dtype: DType, origin: Origin[mut]](Copyable, Movable, Stringable, Writable):
+struct ImageSlice[mut: Bool, //, color_space: ColorSpace, dtype: DType, origin: Origin[mut]](ImplicitlyCopyable, Movable, Stringable, Writable):
     #
     # Fields
     #
@@ -192,9 +193,9 @@ struct ImageSlice[mut: Bool, //, color_space: ColorSpace, dtype: DType, origin: 
         return Self(self, y_range=y_range, x_range=x_range)
 
     #
-    # Copy
+    # Deep Copy
     #
-    fn copy(self) -> Image[color_space, dtype]:
+    fn deep_copy(self) -> Image[color_space, dtype]:
         var result = Image[color_space, dtype](height=self.height(), width=self.width())
 
         @parameter
@@ -219,10 +220,10 @@ struct ImageSlice[mut: Bool, //, color_space: ColorSpace, dtype: DType, origin: 
     # Saving to File
     #
     fn save[file_type: ImageFile](self, path: String) raises:
-        self.copy().save[file_type](path)
+        self.deep_copy().save[file_type](path)
 
     fn save[file_type: ImageFile](self, path: Path) raises:
-        self.copy().save[file_type](path)
+        self.deep_copy().save[file_type](path)
 
     #
     # Stringable & Writable
@@ -243,6 +244,6 @@ struct ImageSlice[mut: Bool, //, color_space: ColorSpace, dtype: DType, origin: 
             ", color_space = ",
             color_space,
             ", bit_depth = ",
-            dtype.bitwidth(),
+            bit_width_of[dtype](),
             "]",
         )

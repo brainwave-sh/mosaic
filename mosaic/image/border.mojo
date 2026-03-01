@@ -11,7 +11,7 @@ from os import abort
 #
 # Border
 #
-struct Border(Copyable, EqualityComparable, Movable, Stringable, Writable):
+struct Border(EqualityComparable, ImplicitlyCopyable, Movable, Stringable, Writable):
     #
     # Supported Borders
     #

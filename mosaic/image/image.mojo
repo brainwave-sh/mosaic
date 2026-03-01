@@ -10,6 +10,7 @@ from pathlib import Path
 from memory import UnsafePointer
 from algorithm import vectorize, parallelize
 from math import floor, ceil, ceildiv, trunc, Ceilable, CeilDivable, Floorable, Truncable
+from sys.info import bit_width_of
 
 from mosaic.numeric import Matrix, MatrixSlice, StridedRange, SIMDRange, Number, ScalarNumber
 from mosaic.numeric.fft import fft_dtype
@@ -24,7 +25,7 @@ from .filters import Filters
 # Image
 #
 struct Image[color_space: ColorSpace, dtype: DType](
-    Absable, CeilDivable, Ceilable, EqualityComparable, ExplicitlyCopyable, Floorable, Movable, Roundable, Stringable, Truncable, Writable
+    Absable, CeilDivable, Ceilable, Copyable, EqualityComparable, Floorable, Movable, Roundable, Stringable, Truncable, Writable
 ):
     #
     # Fields
@@ -46,13 +47,13 @@ struct Image[color_space: ColorSpace, dtype: DType](
         self._matrix = Matrix[dtype, color_space.channels()](rows=height, cols=width)
 
     # This is an unsafe convenience constructor
-    fn __init__(out self, height: Int, width: Int, owned data: UnsafePointer[Scalar[dtype]]):
+    fn __init__(out self, height: Int, width: Int, var data: UnsafePointer[Scalar[dtype]]):
         self._matrix = Matrix[dtype, color_space.channels()](rows=height, cols=width, data=data)
 
-    fn __init__(out self, owned matrix: Matrix[dtype, color_space.channels()]):
+    fn __init__(out self, var matrix: Matrix[dtype, color_space.channels()]):
         self._matrix = matrix^
 
-    fn __moveinit__(out self, owned existing: Self):
+    fn __moveinit__(out self, deinit existing: Self):
         self._matrix = existing._matrix^
 
     @staticmethod
@@ -102,7 +103,7 @@ struct Image[color_space: ColorSpace, dtype: DType](
 
     @parameter
     fn bit_depth(self) -> Int:
-        return dtype.bitwidth()
+        return bit_width_of[dtype]()
 
     @always_inline
     fn bytes(self) -> Int:
@@ -280,7 +281,7 @@ struct Image[color_space: ColorSpace, dtype: DType](
 
     @always_inline
     fn extract_channel[channel: Int](self) -> Matrix[dtype]:
-        return self.channel_slice[channel]().copy[rebound_depth=1]()
+        return self.channel_slice[channel]().deep_copy[rebound_depth=1]()
 
     fn extract_channel(self, channel: Int) -> Matrix[dtype]:
         _assert(0 <= channel < color_space.channels(), "Channel must be in color space channel bounds")
@@ -326,7 +327,7 @@ struct Image[color_space: ColorSpace, dtype: DType](
         self._matrix.store_sub_matrix(value, row=y, col=x, component=channel)
 
     #
-    # ExplicitlyCopyable
+    # Copyable
     #
     fn copy(self) -> Self:
         return Self(self._matrix.copy())
@@ -725,7 +726,7 @@ struct Image[color_space: ColorSpace, dtype: DType](
                             col=x * self.width() // width,
                             component=channel,
                             offset=SIMDRange[simd_width]() * self.width() // width,
-                            mask=True,
+                            mask=SIMD[DType.bool, simd_width](fill=True),
                         ).value,
                         y=y,
                         x=x,
@@ -755,14 +756,14 @@ struct Image[color_space: ColorSpace, dtype: DType](
                     var fractional_x = (x + SIMDRange[simd_width]().cast[DType.float64]()) * self.width() / width
                     var x1 = floor(fractional_x).cast[DType.index]()
                     var x2 = (x1 + 1).clamp(0, self.width() - 1)
-                    var x_in_bounds = x1 != x2
+                    var x_in_bounds = (x2 - x1).cast[DType.bool]()
 
-                    var top_left = self._matrix.strided_gather(row=y1, col=Int(x1[0]), component=channel, offset=x1 - x1[0], mask=True).value.cast[
-                        DType.float64
-                    ]()
-                    var top_right = self._matrix.strided_gather(row=y1, col=Int(x2[0]), component=channel, offset=x2 - x2[0], mask=True).value.cast[
-                        DType.float64
-                    ]()
+                    var top_left = self._matrix.strided_gather(
+                        row=y1, col=Int(x1[0]), component=channel, offset=x1 - x1[0], mask=SIMD[DType.bool, simd_width](fill=True)
+                    ).value.cast[DType.float64]()
+                    var top_right = self._matrix.strided_gather(
+                        row=y1, col=Int(x2[0]), component=channel, offset=x2 - x2[0], mask=SIMD[DType.bool, simd_width](fill=True)
+                    ).value.cast[DType.float64]()
 
                     var top_intermediate = x_in_bounds.select(
                         true_case=(x2.cast[DType.float64]() - fractional_x) * top_left + (fractional_x - x1.cast[DType.float64]()) * top_right,
@@ -773,12 +774,12 @@ struct Image[color_space: ColorSpace, dtype: DType](
                     if y1 == y2:
                         value = top_intermediate
                     else:
-                        var bottom_left = self._matrix.strided_gather(row=y2, col=Int(x1[0]), component=channel, offset=x1 - x1[0], mask=True).value.cast[
-                            DType.float64
-                        ]()
-                        var bottom_right = self._matrix.strided_gather(row=y2, col=Int(x2[0]), component=channel, offset=x2 - x2[0], mask=True).value.cast[
-                            DType.float64
-                        ]()
+                        var bottom_left = self._matrix.strided_gather(
+                            row=y2, col=Int(x1[0]), component=channel, offset=x1 - x1[0], mask=SIMD[DType.bool, simd_width](fill=True)
+                        ).value.cast[DType.float64]()
+                        var bottom_right = self._matrix.strided_gather(
+                            row=y2, col=Int(x2[0]), component=channel, offset=x2 - x2[0], mask=SIMD[DType.bool, simd_width](fill=True)
+                        ).value.cast[DType.float64]()
 
                         var bottom_intermediate = x_in_bounds.select(
                             true_case=(x2.cast[DType.float64]() - fractional_x) * bottom_left + (fractional_x - x1.cast[DType.float64]()) * bottom_right,
@@ -907,7 +908,7 @@ struct Image[color_space: ColorSpace, dtype: DType](
         var y_offset = SIMD[DType.index, width]()
         var x_offset = SIMD[DType.index, width]()
         var offset = SIMD[DType.index, width]()
-        var mask = SIMD[DType.bool, width](False)
+        var mask = SIMD[DType.bool, width](fill=False)
         var width_range = SIMD[DType.index, width]()
 
         for kernel_y in range(0, kernel.rows()):
@@ -1121,4 +1122,6 @@ struct Image[color_space: ColorSpace, dtype: DType](
         return String.write(self)
 
     fn write_to[W: Writer](self, mut writer: W):
-        writer.write("[Image: height = ", self.height(), ", width = ", self.width(), ", color_space = ", color_space, ", bit_depth = ", dtype.bitwidth(), "]")
+        writer.write(
+            "[Image: height = ", self.height(), ", width = ", self.width(), ", color_space = ", color_space, ", bit_depth = ", bit_width_of[dtype](), "]"
+        )

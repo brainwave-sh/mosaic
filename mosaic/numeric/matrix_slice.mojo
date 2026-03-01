@@ -21,7 +21,7 @@ struct MatrixSlice[
     depth: Int,
     complex: Bool,
     origin: Origin[mut],
-](Copyable, Movable, Stringable, Writable):
+](ImplicitlyCopyable, Movable, Stringable, Writable):
     #
     # Fields
     #
@@ -451,9 +451,9 @@ struct MatrixSlice[
         ](self, row_range=row_range, col_range=col_range)
 
     #
-    # Copy
+    # Deep Copy
     #
-    fn copy[*, rebound_depth: Int = depth_range.count()](self) -> Matrix[dtype, rebound_depth, complex=complex]:
+    fn deep_copy[*, rebound_depth: Int = depth_range.count()](self) -> Matrix[dtype, rebound_depth, complex=complex]:
         constrained[rebound_depth == depth_range.count(), "rebound_depth must equal matrix slice depth"]()
 
         var result = Matrix[dtype, rebound_depth, complex=complex](rows=self.rows(), cols=self.cols())

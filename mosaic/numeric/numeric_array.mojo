@@ -14,7 +14,7 @@ from mosaic.utility import _assert
 #
 # NumericArray
 #
-struct NumericArray[dtype: DType, *, complex: Bool = False](ExplicitlyCopyable, Sized, Stringable, Writable):
+struct NumericArray[dtype: DType, *, complex: Bool = False](Copyable, Sized, Stringable, Writable):
     #
     # Fields
     #
@@ -46,27 +46,27 @@ struct NumericArray[dtype: DType, *, complex: Bool = False](ExplicitlyCopyable, 
         for index in range(len(values)):
             self.store(values[index], index=index)
 
-    fn __init__(out self, owned values: List[ScalarNumber[dtype, complex=complex]]):
+    fn __init__(out self, var values: List[ScalarNumber[dtype, complex=complex]]):
         self._data = values.steal_data().bitcast[Scalar[dtype]]()
         self._count = len(values)
 
-    fn __init__(out self, owned data: UnsafePointer[ScalarNumber[dtype, complex=complex]], count: Int):
+    fn __init__(out self, var data: UnsafePointer[ScalarNumber[dtype, complex=complex]], count: Int):
         _assert(count > 0, "Count must be greater than 0")
 
         self._data = data.bitcast[Scalar[dtype]]()
         self._count = count
 
-    fn __init__(out self, owned data: UnsafePointer[Scalar[dtype]], count: Int):
+    fn __init__(out self, var data: UnsafePointer[Scalar[dtype]], count: Int):
         _assert(count > 0, "Count must be greater than 0")
 
         self._data = data
         self._count = count
 
-    fn __moveinit__(out self, owned existing: Self):
+    fn __moveinit__(out self, deinit existing: Self):
         self._data = existing._data
         self._count = existing._count
 
-    fn __del__(owned self):
+    fn __del__(deinit self):
         self._data.free()
 
     @staticmethod
@@ -151,8 +151,8 @@ struct NumericArray[dtype: DType, *, complex: Bool = False](ExplicitlyCopyable, 
     fn strided_store[width: Int, //](mut self, value: Number[dtype, width, complex=complex], index: Int, stride: Int):
         @parameter
         if complex:
-            self._data.offset(index * 2).strided_store(value.real().value, stride=stride * 2)
-            self._data.offset(index * 2 + 1).strided_store(value.imaginary().value, stride=stride * 2)
+            self._data.offset(index * 2).strided_store(value.real(), stride=stride * 2)
+            self._data.offset(index * 2 + 1).strided_store(value.imaginary(), stride=stride * 2)
         else:
             self._data.offset(index).strided_store(value.value, stride=stride)
 
@@ -197,7 +197,7 @@ struct NumericArray[dtype: DType, *, complex: Bool = False](ExplicitlyCopyable, 
         return self._data.bitcast[UInt8]()
 
     #
-    # ExplicitlyCopyable
+    # Copyable
     #
     fn copy(self) -> Self:
         var result = Self(count=self._count)

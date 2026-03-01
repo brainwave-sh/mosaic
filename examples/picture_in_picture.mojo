@@ -23,7 +23,7 @@ fn main():
         ]
 
         # Step 3: Materialize the slice into an Image with `copy()` and add a black border
-        var padded_squirrel_head = squirrel_head.copy().padded(2)
+        var padded_squirrel_head = squirrel_head.deep_copy().padded(2)
 
         # Step 4: Store the sub-image in the original image in the top left corner
         image.store_sub_image(padded_squirrel_head, y=20, x=20)

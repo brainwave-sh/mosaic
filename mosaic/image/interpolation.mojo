@@ -11,7 +11,7 @@ from os import abort
 #
 # Interpolation
 #
-struct Interpolation(Copyable, EqualityComparable, Movable, Stringable, Writable):
+struct Interpolation(EqualityComparable, ImplicitlyCopyable, Movable, Stringable, Writable):
     #
     # Supported Interpolations
     #

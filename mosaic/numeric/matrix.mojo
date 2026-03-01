@@ -20,7 +20,7 @@ from .fft import fft, fft_dtype
 # Matrix
 #
 struct Matrix[dtype: DType, depth: Int = 1, *, complex: Bool = False](
-    Absable, CeilDivable, Ceilable, EqualityComparable, ExplicitlyCopyable, Floorable, Movable, Roundable, Stringable, Truncable, Writable
+    Absable, CeilDivable, Ceilable, Copyable, EqualityComparable, Floorable, Movable, Roundable, Stringable, Truncable, Writable
 ):
     #
     # Fields
@@ -51,7 +51,7 @@ struct Matrix[dtype: DType, depth: Int = 1, *, complex: Bool = False](
         self._data = NumericArray[dtype, complex=complex](count=rows * cols * depth)
         self.fill(value)
 
-    fn __init__(out self, *, rows: Int, cols: Int, owned values: List[ScalarNumber[dtype, complex=complex]]):
+    fn __init__(out self, *, rows: Int, cols: Int, var values: List[ScalarNumber[dtype, complex=complex]]):
         constrained[depth > 0]()
         _assert(rows * cols * depth == len(values), "Mismatch in list length for Matrix constructor")
 
@@ -59,7 +59,7 @@ struct Matrix[dtype: DType, depth: Int = 1, *, complex: Bool = False](
         self._cols = cols
         self._data = NumericArray[dtype, complex=complex](values.steal_data(), count=rows * cols * depth)
 
-    fn __init__(out self, *, rows: Int, cols: Int, owned data: NumericArray[dtype, complex=complex]):
+    fn __init__(out self, *, rows: Int, cols: Int, var data: NumericArray[dtype, complex=complex]):
         constrained[depth > 0]()
         _assert(rows * cols * depth == len(data), "Mismatch in data length for Matrix constructor")
 
@@ -68,7 +68,7 @@ struct Matrix[dtype: DType, depth: Int = 1, *, complex: Bool = False](
         self._data = data^
 
     # This is an unsafe convenience constructor
-    fn __init__(out self, rows: Int, cols: Int, owned data: UnsafePointer[Scalar[dtype]]):
+    fn __init__(out self, rows: Int, cols: Int, var data: UnsafePointer[Scalar[dtype]]):
         constrained[depth > 0]()
         _assert(rows > 0 and cols > 0, "Rows and cols must be greather than 0")
 
@@ -76,7 +76,7 @@ struct Matrix[dtype: DType, depth: Int = 1, *, complex: Bool = False](
         self._cols = cols
         self._data = NumericArray[dtype, complex=complex](data, count=rows * cols * depth)
 
-    fn __moveinit__(out self, owned existing: Self):
+    fn __moveinit__(out self, deinit existing: Self):
         self._rows = existing._rows
         self._cols = existing._cols
         self._data = existing._data^
@@ -537,7 +537,7 @@ struct Matrix[dtype: DType, depth: Int = 1, *, complex: Bool = False](
         return result^
 
     #
-    # ExplicitlyCopyable
+    # Copyable
     #
     fn copy(self) -> Self:
         return Self(rows=self._rows, cols=self._cols, data=self._data.copy())

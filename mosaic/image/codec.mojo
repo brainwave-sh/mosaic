@@ -14,7 +14,7 @@ from mosaic.utility import dynamic_library_filepath
 #
 # Backend
 #
-alias _libcodec = _Global["libcodec", _OwnedDLHandle, _load_libcodec]()
+alias _libcodec = _Global["libcodec", _load_libcodec]()
 
 
 fn _load_libcodec() -> _OwnedDLHandle:
@@ -27,7 +27,7 @@ fn _load_libcodec() -> _OwnedDLHandle:
 #
 # ImageFile
 #
-struct ImageFile(Copyable, EqualityComparable, Movable, Stringable, Writable):
+struct ImageFile(EqualityComparable, ImplicitlyCopyable, Movable, Stringable, Writable):
     #
     # Supported File Types
     #
@@ -50,7 +50,7 @@ struct ImageFile(Copyable, EqualityComparable, Movable, Stringable, Writable):
     fn __init__(out self, raw_value: String):
         self._raw_value = raw_value
 
-        if raw_value not in Self._supported_image_file_types:
+        if raw_value not in materialize[Self._supported_image_file_types]():
             abort("Unsupported image file type: " + raw_value)
 
     #

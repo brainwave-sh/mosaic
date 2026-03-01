@@ -6,7 +6,7 @@
 #
 
 from os import abort
-from sys import simdwidthof
+from sys import simd_width_of
 from sys.info import CompilationTarget
 
 
@@ -14,9 +14,9 @@ from sys.info import CompilationTarget
 fn optimal_simd_width[dtype: DType]() -> Int:
     @parameter
     if CompilationTarget.is_macos():
-        return 4 * simdwidthof[dtype]()
+        return 4 * simd_width_of[dtype]()
     else:
-        return 2 * simdwidthof[dtype]()
+        return 2 * simd_width_of[dtype]()
 
 
 alias unroll_factor = 4

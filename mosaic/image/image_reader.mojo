@@ -17,7 +17,7 @@ from .codec import _libcodec
 #
 # ImageInfo
 #
-struct ImageInfo(Copyable, Movable, Stringable, Writable):
+struct ImageInfo(ImplicitlyCopyable, Movable, Stringable, Writable):
     var height: c_int
     var width: c_int
     var bit_depth: c_int
