@@ -10,8 +10,8 @@ from testing import assert_true, assert_equal, TestSuite
 from mosaic.image import Image, ImageFile, ColorSpace, Border, Interpolation
 from mosaic.numeric import Matrix, ScalarNumber
 
-alias input = "tests/data/input/"
-alias expected = "tests/data/output/"
+comptime input = "tests/data/input/"
+comptime expected = "tests/data/output/"
 
 
 fn test_blur_image() raises:
@@ -54,11 +54,11 @@ fn test_detect_edges() raises:
     var kernel = Matrix[DType.float64, ColorSpace.greyscale.channels()](
         rows=3,
         cols=3,
-        values=List[ScalarNumber[DType.float64]](
-            0,  1, 0,
-            1, -4, 1,
-            0,  1, 0
-        ),
+        values=[
+            ScalarNumber[DType.float64](0),  ScalarNumber[DType.float64](1), ScalarNumber[DType.float64](0),
+            ScalarNumber[DType.float64](1), ScalarNumber[DType.float64](-4), ScalarNumber[DType.float64](1),
+            ScalarNumber[DType.float64](0),  ScalarNumber[DType.float64](1), ScalarNumber[DType.float64](0),
+        ],
     )
     var result = image.filtered[Border.reflect](kernel).as_type[DType.uint8]()
 
@@ -101,7 +101,7 @@ fn test_high_pass_filter() raises:
     var spectrum = image.spectrum()
     var hp_spectrum = spectrum.shifted_origin_to_center()
 
-    alias filter_size = 64
+    comptime filter_size = 64
     var start_row = (spectrum.rows() - filter_size) // 2
     var start_col = (spectrum.cols() - filter_size) // 2
     var lf_slice = hp_spectrum[start_row : start_row + filter_size, start_col : start_col + filter_size]
@@ -143,7 +143,7 @@ fn test_pad_image() raises:
 fn test_picture_in_picture() raises:
     var image = Image[ColorSpace.rgb, DType.uint8](input + "squirrel.jpeg")
 
-    alias squirrel_head_size = 150
+    comptime squirrel_head_size = 150
     var head = image[120 : 120 + squirrel_head_size, 240 : 240 + squirrel_head_size]
     var padded_head = head.deep_copy().padded(2)
     image.store_sub_image(padded_head, y=20, x=20)

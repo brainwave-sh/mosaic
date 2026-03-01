@@ -15,22 +15,22 @@ from mosaic.utility import dynamic_library_filepath
 #
 # Backend
 #
-alias _libfft = _Global["libfft", _load_libfft]()
+comptime _libfft = _Global["libfft", _load_libfft]()
 
 
 fn _load_libfft() -> OwnedDLHandle:
     try:
         return OwnedDLHandle(dynamic_library_filepath("libmosaic-fft"))
     except:
-        return abort[OwnedDLHandle]()
+        abort()
 
 
-alias _fft_func_name = "fft_" + String(fft_dtype)
+comptime _fft_func_name = "fft_" + String(fft_dtype)
 
 #
 # FFT
 #
-alias fft_dtype = DType.float32
+comptime fft_dtype = DType.float32
 
 
 fn fft[
@@ -107,4 +107,4 @@ fn fft[
 
         return result^
     except:
-        return abort[Matrix[fft_dtype, depth, complex=True]]()
+        abort()

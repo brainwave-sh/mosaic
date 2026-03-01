@@ -11,13 +11,13 @@ from os import abort
 #
 # Border
 #
-struct Border(EqualityComparable, ImplicitlyCopyable, Movable, Stringable, Writable):
+struct Border(Equatable, ImplicitlyCopyable, Movable, Stringable, Writable):
     #
     # Supported Borders
     #
-    alias zero = Self(0)
-    alias wrap = Self(1)
-    alias reflect = Self(2)
+    comptime zero = Self(0)
+    comptime wrap = Self(1)
+    comptime reflect = Self(2)
 
     #
     # Fields
@@ -34,7 +34,7 @@ struct Border(EqualityComparable, ImplicitlyCopyable, Movable, Stringable, Writa
             abort("Unsupported border: " + String(raw_value))
 
     #
-    # EqualityComparable
+    # Equatable
     #
     fn __eq__(self, other: Self) -> Bool:
         return self._raw_value == other._raw_value

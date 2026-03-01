@@ -14,33 +14,33 @@ from mosaic.utility import dynamic_library_filepath
 #
 # Backend
 #
-alias _libcodec = _Global["libcodec", _load_libcodec]()
+comptime _libcodec = _Global["libcodec", _load_libcodec]()
 
 
 fn _load_libcodec() -> OwnedDLHandle:
     try:
         return OwnedDLHandle(dynamic_library_filepath("libmosaic-codec"))
     except:
-        return abort[OwnedDLHandle]()
+        abort()
 
 
 #
 # ImageFile
 #
-struct ImageFile(EqualityComparable, ImplicitlyCopyable, Movable, Stringable, Writable):
+struct ImageFile(Equatable, ImplicitlyCopyable, Movable, Stringable, Writable):
     #
     # Supported File Types
     #
-    alias png = Self(ImageFile._png)
-    alias jpeg = Self(ImageFile._jpeg)
+    comptime png = Self(ImageFile._png)
+    comptime jpeg = Self(ImageFile._jpeg)
 
     #
     # Fields
     #
-    alias _png = String("png")
-    alias _jpeg = String("jpeg")
+    comptime _png = String("png")
+    comptime _jpeg = String("jpeg")
 
-    alias _supported_image_file_types = [Self._png, Self._jpeg]
+    comptime _supported_image_file_types = [Self._png, Self._jpeg]
 
     var _raw_value: String
 
@@ -62,18 +62,18 @@ struct ImageFile(EqualityComparable, ImplicitlyCopyable, Movable, Stringable, Wr
         elif self == Self.jpeg:
             return ".jpeg"
         else:
-            return abort[String]("Unimplemented extension() for image file type: " + self._raw_value)
+            abort("Unimplemented extension() for image file type: " + self._raw_value)
 
     fn valid_extensions(self) -> List[String]:
         if self == Self.png:
-            return List[String](".png")
+            return [".png"]
         elif self == Self.jpeg:
-            return List[String](".jpeg", "jpg")
+            return [".jpeg", "jpg"]
         else:
-            return abort[List[String]]("Unimplemented valid_extensions() for image file type: " + self._raw_value)
+            abort("Unimplemented valid_extensions() for image file type: " + self._raw_value)
 
     #
-    # EqualityComparable
+    # Equatable
     #
     fn __eq__(self, other: Self) -> Bool:
         return self._raw_value == other._raw_value

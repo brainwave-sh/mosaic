@@ -11,15 +11,15 @@ from os import abort
 #
 # Interpolation
 #
-struct Interpolation(EqualityComparable, ImplicitlyCopyable, Movable, Stringable, Writable):
+struct Interpolation(Equatable, ImplicitlyCopyable, Movable, Stringable, Writable):
     #
     # Supported Interpolations
     #
-    alias nearest = Self(0)
-    alias bilinear = Self(1)
-    alias bicubic = Self(2)
-    alias lanczos4 = Self(3)
-    alias area = Self(4)
+    comptime nearest = Self(0)
+    comptime bilinear = Self(1)
+    comptime bicubic = Self(2)
+    comptime lanczos4 = Self(3)
+    comptime area = Self(4)
 
     #
     # Fields
@@ -36,7 +36,7 @@ struct Interpolation(EqualityComparable, ImplicitlyCopyable, Movable, Stringable
             abort("Unsupported interpolation: " + String(raw_value))
 
     #
-    # EqualityComparable
+    # Equatable
     #
     fn __eq__(self, other: Self) -> Bool:
         return self._raw_value == other._raw_value

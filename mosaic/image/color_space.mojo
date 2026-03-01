@@ -12,12 +12,12 @@ from sys.ffi import c_int
 #
 # ColorSpace
 #
-struct ColorSpace(EqualityComparable, ImplicitlyCopyable, Movable, Stringable, Writable):
+struct ColorSpace(Equatable, ImplicitlyCopyable, Movable, Stringable, Writable):
     #
     # Supported Color Spaces
     #
-    alias greyscale = Self(0)
-    alias rgb = Self(1)
+    comptime greyscale = Self(0)
+    comptime rgb = Self(1)
 
     #
     # Fields
@@ -45,13 +45,13 @@ struct ColorSpace(EqualityComparable, ImplicitlyCopyable, Movable, Stringable, W
         elif self == Self.rgb:
             return 3
         else:
-            return abort[Int]("Unimplemented channels() for color space: " + String(self))
+            abort("Unimplemented channels() for color space: " + String(self))
 
     fn is_display_color_space(self) -> Bool:
         return self in [Self.greyscale, Self.rgb]
 
     #
-    # EqualityComparable
+    # Equatable
     #
     fn __eq__(self, other: Self) -> Bool:
         return self._raw_value == other._raw_value

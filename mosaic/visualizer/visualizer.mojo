@@ -15,14 +15,14 @@ from mosaic.image import Image, ImageSlice, ColorSpace
 #
 # Backend
 #
-alias _libvisualizer = _Global["libvisualizer", _load_libvisualizer]()
+comptime _libvisualizer = _Global["libvisualizer", _load_libvisualizer]()
 
 
 fn _load_libvisualizer() -> OwnedDLHandle:
     try:
         return OwnedDLHandle(dynamic_library_filepath("libmosaic-visualizer"))
     except:
-        return abort[OwnedDLHandle]()
+        abort()
 
 
 #
@@ -32,13 +32,13 @@ struct Visualizer:
     #
     # Fields
     #
-    alias display_dtype = DType.uint8
+    comptime display_dtype = DType.uint8
 
     #
     # ImageSlice
     #
     @staticmethod
-    fn show[dtype: DType, color_space: ColorSpace, //](image_slice: ImageSlice[color_space, dtype], window_title: String):
+    fn show(image_slice: ImageSlice, window_title: String):
         Self.show(image=image_slice.deep_copy(), window_title=window_title)
 
     #
@@ -80,7 +80,7 @@ struct Visualizer:
                 height=c_int(image.height()),
                 width=c_int(image.width()),
                 channels=c_int(image.channels()),
-                window_title=window_title.unsafe_cstr_ptr(),
+                window_title=window_title.as_c_string_slice().unsafe_ptr(),
             )
         except:
             abort()
@@ -99,4 +99,4 @@ struct Visualizer:
 
             return wait(c_float(timeout))
         except:
-            return abort[Bool]()
+            abort()

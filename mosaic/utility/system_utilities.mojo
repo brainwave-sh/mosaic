@@ -19,7 +19,7 @@ fn optimal_simd_width[dtype: DType]() -> Int:
         return 2 * simd_width_of[dtype]()
 
 
-alias unroll_factor = 4
+comptime unroll_factor = 4
 
 
 @parameter
@@ -29,4 +29,4 @@ fn dynamic_library_filepath(name: String) -> String:
     elif CompilationTarget.is_macos():
         return name + ".dylib"
     else:
-        return abort[String]("Unsupported os for dynamic library filepath determination")
+        abort("Unsupported os for dynamic library filepath determination")

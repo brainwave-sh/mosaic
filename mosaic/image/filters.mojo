@@ -40,7 +40,9 @@ struct Filters:
         ]()
 
         if size == 1:
-            return Matrix[dtype, depth, complex=complex].strided_replication(rows=size, cols=1, values=List[ScalarNumber[dtype, complex=complex]](1.0))
+            return Matrix[dtype, depth, complex=complex].strided_replication(
+                rows=size, cols=1, values=[ScalarNumber[dtype, complex=complex](1.0)]
+            )
         elif std_dev:
             var result = Matrix[DType.float64, depth, complex=complex](rows=size, cols=1)
             var variance = std_dev.value() ** 2
@@ -57,23 +59,25 @@ struct Filters:
         else:
             if size == 3:
                 return Matrix[dtype, depth, complex=complex].strided_replication(
-                    rows=size, cols=1, values=List[ScalarNumber[dtype, complex=complex]](0.250, 0.500, 0.250)
+                    rows=size, cols=1, values=[ScalarNumber[dtype, complex=complex](0.250), ScalarNumber[dtype, complex=complex](0.500), ScalarNumber[dtype, complex=complex](0.250)]
                 )
             elif size == 5:
                 return Matrix[dtype, depth, complex=complex].strided_replication(
-                    rows=size, cols=1, values=List[ScalarNumber[dtype, complex=complex]](0.062500, 0.250000, 0.375000, 0.250000, 0.062500)
+                    rows=size, cols=1, values=[ScalarNumber[dtype, complex=complex](0.062500), ScalarNumber[dtype, complex=complex](0.250000), ScalarNumber[dtype, complex=complex](0.375000), ScalarNumber[dtype, complex=complex](0.250000), ScalarNumber[dtype, complex=complex](0.062500)]
                 )
             elif size == 7:
                 return Matrix[dtype, depth, complex=complex].strided_replication(
-                    rows=size, cols=1, values=List[ScalarNumber[dtype, complex=complex]](0.031250, 0.109375, 0.218750, 0.281250, 0.218750, 0.109375, 0.031250)
+                    rows=size, cols=1, values=[ScalarNumber[dtype, complex=complex](0.031250), ScalarNumber[dtype, complex=complex](0.109375), ScalarNumber[dtype, complex=complex](0.218750), ScalarNumber[dtype, complex=complex](0.281250), ScalarNumber[dtype, complex=complex](0.218750), ScalarNumber[dtype, complex=complex](0.109375), ScalarNumber[dtype, complex=complex](0.031250)]
                 )
             elif size == 9:
                 return Matrix[dtype, depth, complex=complex].strided_replication(
                     rows=size,
                     cols=1,
-                    values=List[ScalarNumber[dtype, complex=complex]](
-                        0.015625000, 0.050781250, 0.117187500, 0.199218750, 0.234375000, 0.199218750, 0.117187500, 0.050781250, 0.015625000
-                    ),
+                    values=[
+                        ScalarNumber[dtype, complex=complex](0.015625000), ScalarNumber[dtype, complex=complex](0.050781250), ScalarNumber[dtype, complex=complex](0.117187500),
+                        ScalarNumber[dtype, complex=complex](0.199218750), ScalarNumber[dtype, complex=complex](0.234375000), ScalarNumber[dtype, complex=complex](0.199218750),
+                        ScalarNumber[dtype, complex=complex](0.117187500), ScalarNumber[dtype, complex=complex](0.050781250), ScalarNumber[dtype, complex=complex](0.015625000),
+                    ],
                 )
             else:
                 var result = Matrix[DType.float64, depth, complex=complex](rows=size, cols=1)
