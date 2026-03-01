@@ -6,7 +6,7 @@
 #
 
 from os import abort
-from sys.ffi import _Global, _OwnedDLHandle
+from sys.ffi import _Global, OwnedDLHandle
 
 from mosaic.utility import dynamic_library_filepath
 
@@ -17,11 +17,11 @@ from mosaic.utility import dynamic_library_filepath
 alias _libcodec = _Global["libcodec", _load_libcodec]()
 
 
-fn _load_libcodec() -> _OwnedDLHandle:
+fn _load_libcodec() -> OwnedDLHandle:
     try:
-        return _OwnedDLHandle(dynamic_library_filepath("libmosaic-codec"))
+        return OwnedDLHandle(dynamic_library_filepath("libmosaic-codec"))
     except:
-        return abort[_OwnedDLHandle]()
+        return abort[OwnedDLHandle]()
 
 
 #

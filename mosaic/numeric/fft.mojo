@@ -7,7 +7,7 @@
 
 from os import abort
 from memory import UnsafePointer
-from sys.ffi import _Global, _OwnedDLHandle, _get_dylib_function, c_int
+from sys.ffi import _Global, OwnedDLHandle, _get_dylib_function, c_int
 
 from mosaic.utility import dynamic_library_filepath
 
@@ -18,11 +18,11 @@ from mosaic.utility import dynamic_library_filepath
 alias _libfft = _Global["libfft", _load_libfft]()
 
 
-fn _load_libfft() -> _OwnedDLHandle:
+fn _load_libfft() -> OwnedDLHandle:
     try:
-        return _OwnedDLHandle(dynamic_library_filepath("libmosaic-fft"))
+        return OwnedDLHandle(dynamic_library_filepath("libmosaic-fft"))
     except:
-        return abort[_OwnedDLHandle]()
+        return abort[OwnedDLHandle]()
 
 
 alias _fft_func_name = "fft_" + String(fft_dtype)
@@ -44,8 +44,8 @@ fn fft[
                 rows: c_int,
                 cols: c_int,
                 components: c_int,
-                data_in: UnsafePointer[Scalar[fft_dtype]],
-                data_out: UnsafePointer[Scalar[fft_dtype]],
+                data_in: UnsafePointer[Scalar[fft_dtype], MutAnyOrigin],
+                data_out: UnsafePointer[Scalar[fft_dtype], MutAnyOrigin],
                 inverse: Bool,
             ),
         ]()

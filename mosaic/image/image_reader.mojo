@@ -71,9 +71,9 @@ struct ImageReader[color_space: ColorSpace, dtype: DType]:
             _libcodec,
             "decode_image_info",
             fn (
-                raw_data: UnsafePointer[UInt8],
+                raw_data: UnsafePointer[UInt8, MutAnyOrigin],
                 raw_data_length: c_int,
-                image_info: UnsafePointer[ImageInfo],
+                image_info: UnsafePointer[ImageInfo, MutAnyOrigin],
             ) -> c_int,
         ]()
 
@@ -98,16 +98,16 @@ struct ImageReader[color_space: ColorSpace, dtype: DType]:
         # 8-bit images
         #
         if image_info.bit_depth == 8:
-            var image_data = UnsafePointer[UInt8].alloc(num_elements)
+            var image_data = alloc[UInt8](num_elements)
 
             var decode_image_data_uint8 = _get_dylib_function[
                 _libcodec,
                 "decode_image_data_uint8",
                 fn (
-                    raw_data: UnsafePointer[UInt8],
+                    raw_data: UnsafePointer[UInt8, MutAnyOrigin],
                     raw_data_length: c_int,
                     desired_channels: c_int,
-                    image_data: UnsafePointer[UInt8],
+                    image_data: UnsafePointer[UInt8, MutAnyOrigin],
                 ) -> c_int,
             ]()
 
@@ -132,16 +132,16 @@ struct ImageReader[color_space: ColorSpace, dtype: DType]:
         # 16-bit images
         #
         elif image_info.bit_depth == 16:
-            var image_data = UnsafePointer[UInt16].alloc(num_elements)
+            var image_data = alloc[UInt16](num_elements)
 
             var decode_image_data_uint16 = _get_dylib_function[
                 _libcodec,
                 "decode_image_data_uint16",
                 fn (
-                    raw_data: UnsafePointer[UInt8],
+                    raw_data: UnsafePointer[UInt8, MutAnyOrigin],
                     raw_data_length: c_int,
                     desired_channels: c_int,
-                    image_data: UnsafePointer[UInt16],
+                    image_data: UnsafePointer[UInt16, MutAnyOrigin],
                 ) -> c_int,
             ]()
 
@@ -166,16 +166,16 @@ struct ImageReader[color_space: ColorSpace, dtype: DType]:
         # HDR (32-bit float) images
         #
         elif image_info.bit_depth == 32:
-            var image_data = UnsafePointer[Float32].alloc(num_elements)
+            var image_data = alloc[Float32](num_elements)
 
             var decode_image_data_float32 = _get_dylib_function[
                 _libcodec,
                 "decode_image_data_float32",
                 fn (
-                    raw_data: UnsafePointer[UInt8],
+                    raw_data: UnsafePointer[UInt8, MutAnyOrigin],
                     raw_data_length: c_int,
                     desired_channels: c_int,
-                    image_data: UnsafePointer[Float32],
+                    image_data: UnsafePointer[Float32, MutAnyOrigin],
                 ) -> c_int,
             ]()
 

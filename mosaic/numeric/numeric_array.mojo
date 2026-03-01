@@ -18,7 +18,7 @@ struct NumericArray[dtype: DType, *, complex: Bool = False](Copyable, Sized, Str
     #
     # Fields
     #
-    var _data: UnsafePointer[Scalar[dtype]]
+    var _data: UnsafePointer[Scalar[dtype], MutAnyOrigin]
     var _count: Int
 
     #
@@ -29,10 +29,10 @@ struct NumericArray[dtype: DType, *, complex: Bool = False](Copyable, Sized, Str
 
         @parameter
         if complex:
-            self._data = UnsafePointer[Scalar[dtype]].alloc(2 * count)
+            self._data = alloc[Scalar[dtype]](2 * count)
             memset_zero(self._data, 2 * count)
         else:
-            self._data = UnsafePointer[Scalar[dtype]].alloc(count)
+            self._data = alloc[Scalar[dtype]](count)
             memset_zero(self._data, count)
 
         self._count = count
@@ -50,13 +50,13 @@ struct NumericArray[dtype: DType, *, complex: Bool = False](Copyable, Sized, Str
         self._data = values.steal_data().bitcast[Scalar[dtype]]()
         self._count = len(values)
 
-    fn __init__(out self, var data: UnsafePointer[ScalarNumber[dtype, complex=complex]], count: Int):
+    fn __init__(out self, var data: UnsafePointer[ScalarNumber[dtype, complex=complex], MutAnyOrigin], count: Int):
         _assert(count > 0, "Count must be greater than 0")
 
         self._data = data.bitcast[Scalar[dtype]]()
         self._count = count
 
-    fn __init__(out self, var data: UnsafePointer[Scalar[dtype]], count: Int):
+    fn __init__(out self, var data: UnsafePointer[Scalar[dtype], MutAnyOrigin], count: Int):
         _assert(count > 0, "Count must be greater than 0")
 
         self._data = data
@@ -157,7 +157,7 @@ struct NumericArray[dtype: DType, *, complex: Bool = False](Copyable, Sized, Str
             self._data.offset(index).strided_store(value.value, stride=stride)
 
     @always_inline
-    fn gather[width: Int, //](self, index: Int, offset: SIMD[DType.index, width], mask: SIMD[DType.bool, width]) -> Number[dtype, width, complex=complex]:
+    fn gather[width: Int, //](self, index: Int, offset: SIMD[DType.int, width], mask: SIMD[DType.bool, width]) -> Number[dtype, width, complex=complex]:
         @parameter
         if complex:
             return Number[dtype, width, complex=complex](
@@ -174,7 +174,7 @@ struct NumericArray[dtype: DType, *, complex: Bool = False](Copyable, Sized, Str
             )
 
     @always_inline
-    fn scatter[width: Int, //](self, value: Number[dtype, width, complex=complex], index: Int, offset: SIMD[DType.index, width], mask: SIMD[DType.bool, width]):
+    fn scatter[width: Int, //](self, value: Number[dtype, width, complex=complex], index: Int, offset: SIMD[DType.int, width], mask: SIMD[DType.bool, width]):
         @parameter
         if complex:
             self._data.offset(index * 2).scatter(
@@ -189,11 +189,11 @@ struct NumericArray[dtype: DType, *, complex: Bool = False](Copyable, Sized, Str
     # Unsafe Access
     #
     @always_inline
-    fn unsafe_data_ptr(self) -> UnsafePointer[Scalar[dtype]]:
+    fn unsafe_data_ptr(self) -> UnsafePointer[Scalar[dtype], MutAnyOrigin]:
         return self._data
 
     @always_inline
-    fn unsafe_uint8_ptr(self) -> UnsafePointer[UInt8]:
+    fn unsafe_uint8_ptr(self) -> UnsafePointer[UInt8, MutAnyOrigin]:
         return self._data.bitcast[UInt8]()
 
     #

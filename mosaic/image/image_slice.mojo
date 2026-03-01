@@ -94,13 +94,13 @@ struct ImageSlice[mut: Bool, //, color_space: ColorSpace, dtype: DType, origin: 
         return self.strided_load(y=y, x=x, channel=channel)
 
     @always_inline
-    fn __setitem__[origin: MutableOrigin, //](mut self: ImageSlice[_, dtype, origin], y: Int, x: Int, value: Scalar[dtype]) raises:
+    fn __setitem__[_origin: MutOrigin, //](mut self: ImageSlice[_, dtype, _origin], y: Int, x: Int, value: Scalar[dtype]) raises:
         constrained[color_space.channels() == 1, "Must specify channel for image slice in color space with channels > 1"]()
 
         self.strided_store(value, y=y, x=x, channel=0)
 
     @always_inline
-    fn __setitem__[origin: MutableOrigin, //](mut self: ImageSlice[_, dtype, origin], y: Int, x: Int, channel: Int, value: Scalar[dtype]) raises:
+    fn __setitem__[_origin: MutOrigin, //](mut self: ImageSlice[_, dtype, _origin], y: Int, x: Int, channel: Int, value: Scalar[dtype]) raises:
         self.strided_store(value, y=y, x=x, channel=channel)
 
     @always_inline
@@ -116,15 +116,15 @@ struct ImageSlice[mut: Bool, //, color_space: ColorSpace, dtype: DType, origin: 
         )
 
     @always_inline
-    fn strided_store[origin: MutableOrigin, width: Int, //](mut self: ImageSlice[_, dtype, origin], value: SIMD[dtype, width], y: Int, x: Int) raises:
+    fn strided_store[_origin: MutOrigin, width: Int, //](mut self: ImageSlice[_, dtype, _origin], value: SIMD[dtype, width], y: Int, x: Int) raises:
         constrained[color_space.channels() == 1, "Must specify channel for image slice in color space with channels > 1"]()
 
         self.strided_store(value, y=y, x=x, channel=0)
 
     @always_inline
     fn strided_store[
-        origin: MutableOrigin, width: Int, //
-    ](mut self: ImageSlice[_, dtype, origin], value: SIMD[dtype, width], y: Int, x: Int, channel: Int) raises:
+        _origin: MutOrigin, width: Int, //
+    ](mut self: ImageSlice[_, dtype, _origin], value: SIMD[dtype, width], y: Int, x: Int, channel: Int) raises:
         self._image[].strided_store(value, y=self._y_range.start + y * self._y_range.step, x=self._x_range.start + x * self._x_range.step, channel=channel)
 
     #
@@ -143,13 +143,13 @@ struct ImageSlice[mut: Bool, //, color_space: ColorSpace, dtype: DType, origin: 
         )
 
     @always_inline
-    fn _strided_store[origin: MutableOrigin, width: Int, //](mut self: ImageSlice[_, dtype, origin], value: SIMD[dtype, width], y: Int, x: Int):
+    fn _strided_store[_origin: MutOrigin, width: Int, //](mut self: ImageSlice[_, dtype, _origin], value: SIMD[dtype, width], y: Int, x: Int):
         constrained[color_space.channels() == 1, "Must specify channel for image slice in color space with channels > 1"]()
 
         self._strided_store(value, y=y, x=x, channel=0)
 
     @always_inline
-    fn _strided_store[origin: MutableOrigin, width: Int, //](mut self: ImageSlice[_, dtype, origin], value: SIMD[dtype, width], y: Int, x: Int, channel: Int):
+    fn _strided_store[_origin: MutOrigin, width: Int, //](mut self: ImageSlice[_, dtype, _origin], value: SIMD[dtype, width], y: Int, x: Int, channel: Int):
         self._image[]._strided_store(value, y=self._y_range.start + y * self._y_range.step, x=self._x_range.start + x * self._x_range.step, channel=channel)
 
     #

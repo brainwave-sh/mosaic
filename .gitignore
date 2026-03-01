@@ -11,6 +11,12 @@
 # Rattler-build
 rattler-build/output
 
+# Modular
+modular
+
+# Claude
+.claude
+
 # Development
 main.mojo
 /*.png

@@ -6,7 +6,7 @@
 #
 
 from os import abort
-from sys.ffi import _Global, _OwnedDLHandle, _get_dylib_function, c_int, c_char, c_float
+from sys.ffi import _Global, OwnedDLHandle, _get_dylib_function, c_int, c_char, c_float
 from memory import UnsafePointer
 
 from mosaic.utility import dynamic_library_filepath
@@ -18,11 +18,11 @@ from mosaic.image import Image, ImageSlice, ColorSpace
 alias _libvisualizer = _Global["libvisualizer", _load_libvisualizer]()
 
 
-fn _load_libvisualizer() -> _OwnedDLHandle:
+fn _load_libvisualizer() -> OwnedDLHandle:
     try:
-        return _OwnedDLHandle(dynamic_library_filepath("libmosaic-visualizer"))
+        return OwnedDLHandle(dynamic_library_filepath("libmosaic-visualizer"))
     except:
-        return abort[_OwnedDLHandle]()
+        return abort[OwnedDLHandle]()
 
 
 #
@@ -67,11 +67,11 @@ struct Visualizer:
                 _libvisualizer,
                 "show",
                 fn (
-                    data: UnsafePointer[UInt8],
+                    data: UnsafePointer[UInt8, MutAnyOrigin],
                     height: c_int,
                     width: c_int,
                     channels: c_int,
-                    window_title: UnsafePointer[c_char],
+                    window_title: UnsafePointer[c_char, ImmutAnyOrigin],
                 ) -> None,
             ]()
 

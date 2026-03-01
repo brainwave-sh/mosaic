@@ -46,9 +46,9 @@ struct ImageWriter:
             if len(dirname) > 0:
                 makedirs(path=dirname, exist_ok=True)
         except:
-            raise ("Failed to create directory for image writing: " + String(self._path))
+            raise Error("Failed to create directory for image writing: " + String(self._path))
 
-        var data: UnsafePointer[UInt8]
+        var data: UnsafePointer[UInt8, MutAnyOrigin]
 
         @parameter
         if dtype == DType.uint8:
@@ -64,8 +64,8 @@ struct ImageWriter:
                 _libcodec,
                 "write_image_data_png",
                 fn (
-                    filename: UnsafePointer[c_char],
-                    data: UnsafePointer[UInt8],
+                    filename: UnsafePointer[c_char, ImmutAnyOrigin],
+                    data: UnsafePointer[UInt8, MutAnyOrigin],
                     height: c_int,
                     width: c_int,
                     channels: c_int,
@@ -84,8 +84,8 @@ struct ImageWriter:
                 _libcodec,
                 "write_image_data_jpeg",
                 fn (
-                    filename: UnsafePointer[c_char],
-                    data: UnsafePointer[UInt8],
+                    filename: UnsafePointer[c_char, ImmutAnyOrigin],
+                    data: UnsafePointer[UInt8, MutAnyOrigin],
                     height: c_int,
                     width: c_int,
                     channels: c_int,

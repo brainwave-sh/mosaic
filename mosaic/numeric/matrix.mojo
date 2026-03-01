@@ -68,7 +68,7 @@ struct Matrix[dtype: DType, depth: Int = 1, *, complex: Bool = False](
         self._data = data^
 
     # This is an unsafe convenience constructor
-    fn __init__(out self, rows: Int, cols: Int, var data: UnsafePointer[Scalar[dtype]]):
+    fn __init__(out self, rows: Int, cols: Int, var data: UnsafePointer[Scalar[dtype], MutAnyOrigin]):
         constrained[depth > 0]()
         _assert(rows > 0 and cols > 0, "Rows and cols must be greather than 0")
 
@@ -165,25 +165,25 @@ struct Matrix[dtype: DType, depth: Int = 1, *, complex: Bool = False](
     @always_inline
     fn gather[
         width: Int, //
-    ](self, row: Int, col: Int, component: Int, offset: SIMD[DType.index, width], mask: SIMD[DType.bool, width],) -> Number[dtype, width, complex=complex]:
+    ](self, row: Int, col: Int, component: Int, offset: SIMD[DType.int, width], mask: SIMD[DType.bool, width],) -> Number[dtype, width, complex=complex]:
         return self._data.gather(index=self.index(row=row, col=col, component=component), offset=offset, mask=mask)
 
     @always_inline
     fn strided_gather[
         width: Int, //
-    ](self, row: Int, col: Int, component: Int, offset: SIMD[DType.index, width], mask: SIMD[DType.bool, width],) -> Number[dtype, width, complex=complex]:
+    ](self, row: Int, col: Int, component: Int, offset: SIMD[DType.int, width], mask: SIMD[DType.bool, width],) -> Number[dtype, width, complex=complex]:
         return self.gather(row=row, col=col, component=component, offset=depth * offset, mask=mask)
 
     @always_inline
     fn scatter[
         width: Int, //
-    ](self, value: Number[dtype, width, complex=complex], row: Int, col: Int, component: Int, offset: SIMD[DType.index, width], mask: SIMD[DType.bool, width],):
+    ](self, value: Number[dtype, width, complex=complex], row: Int, col: Int, component: Int, offset: SIMD[DType.int, width], mask: SIMD[DType.bool, width],):
         self._data.scatter(value, index=self.index(row=row, col=col, component=component), offset=offset, mask=mask)
 
     @always_inline
     fn strided_scatter[
         width: Int, //
-    ](self, row: Int, col: Int, component: Int, value: Number[dtype, width, complex=complex], offset: SIMD[DType.index, width], mask: SIMD[DType.bool, width],):
+    ](self, row: Int, col: Int, component: Int, value: Number[dtype, width, complex=complex], offset: SIMD[DType.int, width], mask: SIMD[DType.bool, width],):
         self.scatter(value, row=row, col=col, component=component, offset=depth * offset, mask=mask)
 
     fn load_full_depth(self, row: Int, col: Int) raises -> InlineArray[ScalarNumber[dtype, complex=complex], depth]:
@@ -324,11 +324,11 @@ struct Matrix[dtype: DType, depth: Int = 1, *, complex: Bool = False](
     # Unsafe Access
     #
     @always_inline
-    fn unsafe_data_ptr(self) -> UnsafePointer[Scalar[dtype]]:
+    fn unsafe_data_ptr(self) -> UnsafePointer[Scalar[dtype], MutAnyOrigin]:
         return self._data.unsafe_data_ptr()
 
     @always_inline
-    fn unsafe_uint8_ptr(self) -> UnsafePointer[UInt8]:
+    fn unsafe_uint8_ptr(self) -> UnsafePointer[UInt8, MutAnyOrigin]:
         return self._data.unsafe_uint8_ptr()
 
     fn keep(self):
@@ -1503,7 +1503,7 @@ struct Matrix[dtype: DType, depth: Int = 1, *, complex: Bool = False](
     fn as_type[new_dtype: DType](self) -> Matrix[new_dtype, depth, complex=complex]:
         @parameter
         if new_dtype == dtype:
-            return rebind[UnsafePointer[Matrix[new_dtype, depth, complex=complex]]](UnsafePointer(to=self)).take_pointee()
+            return rebind[UnsafePointer[Matrix[new_dtype, depth, complex=complex], MutAnyOrigin]](UnsafePointer(to=self)).take_pointee()
         else:
             var result = Matrix[new_dtype, depth, complex=complex](rows=self._rows, cols=self._cols)
 
@@ -1524,11 +1524,11 @@ struct Matrix[dtype: DType, depth: Int = 1, *, complex: Bool = False](
     fn as_complex[new_dtype: DType = dtype](self) -> Matrix[new_dtype, depth, complex=True]:
         @parameter
         if complex and new_dtype == dtype:
-            return rebind[UnsafePointer[Matrix[new_dtype, depth, complex=True]]](UnsafePointer(to=self)).take_pointee()
+            return rebind[UnsafePointer[Matrix[new_dtype, depth, complex=True], MutAnyOrigin]](UnsafePointer(to=self)).take_pointee()
         elif complex:
             var result = self.as_type[new_dtype]()
 
-            return rebind[UnsafePointer[Matrix[new_dtype, depth, complex=True]]](UnsafePointer(to=result)).take_pointee()
+            return rebind[UnsafePointer[Matrix[new_dtype, depth, complex=True], MutAnyOrigin]](UnsafePointer(to=result)).take_pointee()
         else:
             var result = Matrix[new_dtype, depth, complex=True](rows=self._rows, cols=self._cols)
 
@@ -1549,7 +1549,7 @@ struct Matrix[dtype: DType, depth: Int = 1, *, complex: Bool = False](
     fn rebind[new_depth: Int](self) -> Matrix[dtype, new_depth, complex=complex]:
         constrained[new_depth == depth, "new_depth must be equal to depth for rebind"]()
 
-        return rebind[UnsafePointer[Matrix[dtype, new_depth, complex=complex]]](UnsafePointer(to=self)).take_pointee()
+        return rebind[UnsafePointer[Matrix[dtype, new_depth, complex=complex], MutAnyOrigin]](UnsafePointer(to=self)).take_pointee()
 
     #
     # Stringable & Writable

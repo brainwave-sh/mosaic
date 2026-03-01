@@ -185,16 +185,16 @@ struct MatrixSlice[
 
     @always_inline
     fn __setitem__[
-        origin: MutableOrigin, //
-    ](mut self: MatrixSlice[_, dtype, _, complex, origin], row: Int, col: Int, value: ScalarNumber[dtype, complex=complex]) raises:
+        _origin: MutOrigin, //
+    ](mut self: MatrixSlice[_, dtype, _, complex, _origin], row: Int, col: Int, value: ScalarNumber[dtype, complex=complex]) raises:
         constrained[depth_range.count() == 1, "Must specify component for matrix slice with depth > 1"]()
 
         self[row, col, 0] = value
 
     @always_inline
     fn __setitem__[
-        origin: MutableOrigin, //
-    ](mut self: MatrixSlice[_, dtype, _, complex, origin], row: Int, col: Int, component: Int, value: ScalarNumber[dtype, complex=complex]) raises:
+        _origin: MutOrigin, //
+    ](mut self: MatrixSlice[_, dtype, _, complex, _origin], row: Int, col: Int, component: Int, value: ScalarNumber[dtype, complex=complex]) raises:
         self.strided_store(value, row=row, col=col, component=component)
 
     @always_inline
@@ -213,16 +213,16 @@ struct MatrixSlice[
 
     @always_inline
     fn strided_store[
-        origin: MutableOrigin, width: Int, //
-    ](mut self: MatrixSlice[_, dtype, _, complex, origin], value: Number[dtype, width, complex=complex], row: Int, col: Int) raises:
+        _origin: MutOrigin, width: Int, //
+    ](mut self: MatrixSlice[_, dtype, _, complex, _origin], value: Number[dtype, width, complex=complex], row: Int, col: Int) raises:
         constrained[depth_range.count() == 1, "Must specify component for matrix slice with depth > 1"]()
 
         self.strided_store(value, row=row, col=col, component=0)
 
     @always_inline
     fn strided_store[
-        origin: MutableOrigin, width: Int, //
-    ](mut self: MatrixSlice[_, dtype, _, complex, origin], value: Number[dtype, width, complex=complex], row: Int, col: Int, component: Int) raises:
+        _origin: MutOrigin, width: Int, //
+    ](mut self: MatrixSlice[_, dtype, _, complex, _origin], value: Number[dtype, width, complex=complex], row: Int, col: Int, component: Int) raises:
         self._matrix[].strided_store(
             value,
             row=self._row_range.start + row * self._row_range.step,
@@ -249,16 +249,16 @@ struct MatrixSlice[
 
     @always_inline
     fn _strided_store[
-        origin: MutableOrigin, width: Int, //
-    ](mut self: MatrixSlice[_, dtype, _, complex, origin], value: Number[dtype, width, complex=complex], row: Int, col: Int):
+        _origin: MutOrigin, width: Int, //
+    ](mut self: MatrixSlice[_, dtype, _, complex, _origin], value: Number[dtype, width, complex=complex], row: Int, col: Int):
         constrained[depth_range.count() == 1, "Must specify component for matrix slice with depth > 1"]()
 
         self._strided_store(value, row=row, col=col, component=0)
 
     @always_inline
     fn _strided_store[
-        origin: MutableOrigin, width: Int, //
-    ](mut self: MatrixSlice[_, dtype, _, complex, origin], value: Number[dtype, width, complex=complex], row: Int, col: Int, component: Int):
+        _origin: MutOrigin, width: Int, //
+    ](mut self: MatrixSlice[_, dtype, _, complex, _origin], value: Number[dtype, width, complex=complex], row: Int, col: Int, component: Int):
         self._matrix[]._strided_store(
             value,
             row=self._row_range.start + row * self._row_range.step,
@@ -486,7 +486,7 @@ struct MatrixSlice[
     #
     # Numeric Methods
     #
-    fn fill[origin: MutableOrigin, //](mut self: MatrixSlice[_, dtype, _, complex, origin], value: ScalarNumber[dtype, complex=complex]):
+    fn fill[_origin: MutOrigin, //](mut self: MatrixSlice[_, dtype, _, complex, _origin], value: ScalarNumber[dtype, complex=complex]):
         @parameter
         for component in range(depth_range.count()):
 

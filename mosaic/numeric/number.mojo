@@ -154,7 +154,7 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
 
     @always_inline
     @implicit
-    fn __init__(out self, tuple: (SIMD[dtype, width], SIMD[dtype, width])):
+    fn __init__(out self, tuple: Tuple[SIMD[dtype, width], SIMD[dtype, width]]):
         constrained[complex, "__init__(tuple) is only available for complex numbers"]()
 
         self = Self(real=tuple[0], imaginary=tuple[1])
@@ -268,7 +268,7 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
 
     @always_inline
     fn __isub__(mut self, rhs: Self):
-        self = self - rhs.value
+        self = self - rhs
 
     @always_inline
     fn __mul__(self, rhs: Self) -> Self:
@@ -519,10 +519,10 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
         return self.value.__int__()
 
     @always_inline
-    fn __index__(self) -> __mlir_type.index:
-        constrained[not complex, "__index__() is only available for non-complex numbers"]()
+    fn __mlir_index__(self) -> __mlir_type.index:
+        constrained[not complex, "__mlir_index__() is only available for non-complex numbers"]()
 
-        return self.value.__index__()
+        return self.__int__().__mlir_index__()
 
     @always_inline
     fn __round__(self) -> Self:
@@ -631,7 +631,7 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
             return Number[dtype, 2 * width, complex=complex](rebind[Number[dtype, 2 * width, complex=complex].Value](self.value.interleave(other.value)))
 
     @always_inline
-    fn split(self) -> (Number[dtype, width // 2, complex=complex], Number[dtype, width // 2, complex=complex]):
+    fn split(self) -> Tuple[Number[dtype, width // 2, complex=complex], Number[dtype, width // 2, complex=complex]]:
         var split = self.value.split()
 
         return (
@@ -640,7 +640,7 @@ struct Number[dtype: DType, width: Int, *, complex: Bool = False](
         )
 
     @always_inline
-    fn deinterleave(self) -> (Number[dtype, width // 2, complex=complex], Number[dtype, width // 2, complex=complex]):
+    fn deinterleave(self) -> Tuple[Number[dtype, width // 2, complex=complex], Number[dtype, width // 2, complex=complex]]:
         @parameter
         if complex:
             var real = self.real().deinterleave()
